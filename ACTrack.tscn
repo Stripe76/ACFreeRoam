@@ -1,0 +1,31 @@
+[gd_scene load_steps=5 format=3 uid="uid://cpggahcf04tml"]
+
+[ext_resource type="Script" uid="uid://dfugsmye0txng" path="res://scripts/ACTrack.cs" id="1_3rsce"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_3rsce"]
+sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
+ground_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
+
+[sub_resource type="Sky" id="Sky_wlfgr"]
+sky_material = SubResource("ProceduralSkyMaterial_3rsce")
+
+[sub_resource type="Environment" id="Environment_kyjm6"]
+background_mode = 2
+sky = SubResource("Sky_wlfgr")
+tonemap_mode = 2
+glow_enabled = true
+
+[node name="ACTrack" type="Node3D"]
+script = ExtResource("1_3rsce")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_kyjm6")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.8660254, -0.43301278, 0.25, 0, 0.49999997, 0.86602545, -0.50000006, 0.75, -0.43301266, 0, 0, 0)
+shadow_enabled = true
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(-0.99719435, 0, 0.07485697, 0, 1, 0, -0.07485697, 0, -0.99719435, 365.78778, -73.285614, -347.2768)
+
+[node name="Track" type="MeshInstance3D" parent="."]
