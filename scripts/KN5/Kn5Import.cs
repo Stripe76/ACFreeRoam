@@ -1,25 +1,27 @@
-﻿using System;
+﻿using Godot;
+using System;
 using System.IO;
 using System.Collections.Generic;
 
-namespace KN5
+namespace ACTracks.KN5
 {
   public class kn5Model
   {
+    public int version;
+
     public string modelDir;
     public string modelName;
 
-    public int version;
-    //public List<string> textures = new List<string>();
-    public SortedList<string,kn5Texture> textures = new ();
-    public List<kn5Material> materials = new ();
-    public List<kn5Node> nodes = new ();
+    public readonly List<kn5Node> nodes = [];
+    public readonly List<kn5Material> materials = [];
+    public readonly SortedList<string,kn5Texture> textures = new ();
   }
 
   public class kn5Material
   {
     public string name = "Default";
     public string shader = "";
+    
     public float ksAmbient = 0.6f;
     public float ksDiffuse = 0.6f;
     public float ksSpecular = 0.9f;
@@ -39,39 +41,39 @@ namespace KN5
   public class kn5Texture
   {
     public string name;
-    public string filename;
+    
     public float UVScaling = 1.0f;
+    
     public byte[] texData;
   }
   
   public class kn5Node
   {
+    public int parentID = -1;
+    public int materialID = -1;
+
     public int type = 1;
     public string name = "Default";
 
     public float[,] tmatrix = new float[4, 4] { { 1.0f, 0.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 0.0f, 1.0f } };
     public float[,] hmatrix = new float[4, 4] { { 1.0f, 0.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 0.0f, 1.0f } };
 
-    public float[] translation = new float[3] { 0.0f, 0.0f, 0.0f };
-    public float[] rotation = new float[3] { 0.0f, 0.0f, 0.0f };
-    public float[] scaling = new float[3] { 1.0f, 1.0f, 1.0f };
+    public Vector3 translation = Vector3.Zero;
+    public Vector3 rotation = Vector3.Zero;
+    public Vector3 scaling = Vector3.Zero;
 
     public int vertexCount;
-    public float[] position;
-    public float[] normal;
-    public float[] texture0;
+    
+    public Vector3[] position;
+    public Vector3[] normal;
+    public Vector2[] texture0;
 
     public ushort[] indices;
-
-    public int materialID = -1;
-
-    //public List<kn5Node> children; //do I really wanna do this? no
-    public int parentID = -1;
   }
 
   public class Kn5Import
   {
-    public static kn5Model readKN5( string kn5File,bool addPlaceholder = false )
+    public static kn5Model readKN5( string kn5File )
     {
       using( BinaryReader binStream = new BinaryReader( File.OpenRead( kn5File ) ) )
       {
@@ -87,7 +89,6 @@ namespace KN5
           { int unknownNo = binStream.ReadInt32(); } //673425
 
           #region extract textures
-          //Directory.CreateDirectory( newModel.modelDir + "texture" );
           int texCount = binStream.ReadInt32();
           for( int t = 0; t < texCount; t++ )
           {
@@ -99,32 +100,15 @@ namespace KN5
             kn5Texture tex = new kn5Texture( )
             {
               name = texName,
-              filename = texName,
               texData = texBuffer
             };
-            //newModel.textures.Add( tex );
             newModel.textures[texName] = tex;
-
+            /*
             using( BinaryWriter texWriter = new BinaryWriter( File.Create( Path.Join( newModel.modelDir,"textures",texName ) ) ) )
             {
               texWriter.Write( texBuffer );
             }
-
-            /*
-            if( File.Exists( newModel.modelDir + "texture\\" + texName ) )
-            {
-              binStream.BaseStream.Position += texSize;
-            }
-            else
-            {
-              byte[] texBuffer = binStream.ReadBytes(texSize);
-              using( BinaryWriter texWriter = new BinaryWriter( File.Create( newModel.modelDir + "texture\\" + texName ) ) )
-              {
-                texWriter.Write( texBuffer );
-              }
-            }
             */
-            //binStream.BaseStream.Position += texSize;
           }
           #endregion
 
@@ -133,9 +117,9 @@ namespace KN5
           for( int m = 0; m < matCount; m++ )
           {
             kn5Material newMaterial = new kn5Material();
-
             newMaterial.name = ReadStr( binStream,binStream.ReadInt32( ) );
             newMaterial.shader = ReadStr( binStream,binStream.ReadInt32( ) );
+            
             short ashort = binStream.ReadInt16();
             if( newModel.version > 4 )
             { int azero = binStream.ReadInt32(); }
@@ -143,8 +127,8 @@ namespace KN5
             int propCount = binStream.ReadInt32();
             for( int p = 0; p < propCount; p++ )
             {
-              string propName = ReadStr(binStream, binStream.ReadInt32());
-              float propValue = binStream.ReadSingle();
+              string propName = ReadStr( binStream,binStream.ReadInt32( ) );
+              float propValue = binStream.ReadSingle( );
               newMaterial.shaderProps += propName + " = " + propValue.ToString( ) + "&cr;&lf;";
 
               switch( propName )
@@ -174,7 +158,6 @@ namespace KN5
                   newMaterial.detailUVMultiplier = propValue;
                   break;
               }
-
               binStream.BaseStream.Position += 36;
             }
 
@@ -200,35 +183,12 @@ namespace KN5
                   break;
               }
             }
-
             newModel.materials.Add( newMaterial );
           }
           #endregion
 
           (long start,long children) = readNodes( binStream,newModel.nodes,-1 ); //recursive
 
-          if( addPlaceholder )
-          {
-            binStream.BaseStream.Seek( 0,SeekOrigin.Begin );
-
-            byte[] before = binStream.ReadBytes( (int)children );
-            int count = binStream.ReadInt32( );
-            byte[] after = binStream.ReadBytes( (int)(binStream.BaseStream.Length - (children + sizeof(Int32) )) );
-
-            kn5Node placeholder = new ( )
-            {
-               name = "AC_START_0​",
-            };
-            using( BinaryWriter binWrite = new ( File.OpenWrite( kn5File + ".placeholders" ) ) )
-            {
-              binWrite.Write( before );
-              binWrite.Write( count+1 );
-
-              writeNode( binWrite,placeholder );
-
-              binWrite.Write( after );
-            }
-          }
           return newModel;
         }
         else
@@ -241,14 +201,14 @@ namespace KN5
 
     private static (long start,long children) readNodes( BinaryReader modelStream,List<kn5Node> nodeList,int parentID )
     {
-      kn5Node newNode = new kn5Node();
-      newNode.parentID = parentID;
-
       long start = modelStream.BaseStream.Position;
 
-      newNode.type = modelStream.ReadInt32( );
-      newNode.name = ReadStr( modelStream,modelStream.ReadInt32( ) );
-
+      kn5Node newNode = new ()
+      {
+        parentID = parentID,
+        type = modelStream.ReadInt32( ),
+        name = ReadStr( modelStream,modelStream.ReadInt32( ) )
+      };
       long children = modelStream.BaseStream.Position;
 
       int childrenCount = modelStream.ReadInt32();
@@ -276,7 +236,7 @@ namespace KN5
           newNode.tmatrix[3,2] = modelStream.ReadSingle( );
           newNode.tmatrix[3,3] = modelStream.ReadSingle( );
 
-          newNode.translation = new float[3] { newNode.tmatrix[3,0],newNode.tmatrix[3,1],newNode.tmatrix[3,2] };
+          newNode.translation = new Vector3( newNode.tmatrix[3,0],newNode.tmatrix[3,1],newNode.tmatrix[3,2] );
           newNode.rotation = MatrixToEuler( newNode.tmatrix );
           newNode.scaling = ScaleFromMatrix( newNode.tmatrix );
 
@@ -291,22 +251,15 @@ namespace KN5
           byte dbyte = modelStream.ReadByte();
 
           newNode.vertexCount = modelStream.ReadInt32( );
-          newNode.position = new float[newNode.vertexCount * 3];
-          newNode.normal = new float[newNode.vertexCount * 3];
-          newNode.texture0 = new float[newNode.vertexCount * 2];
+          newNode.position = new Vector3[newNode.vertexCount];
+          newNode.normal = new Vector3[newNode.vertexCount];
+          newNode.texture0 = new Vector2[newNode.vertexCount];
 
           for( int v = 0; v < newNode.vertexCount; v++ )
           {
-            newNode.position[v * 3] = modelStream.ReadSingle( );
-            newNode.position[v * 3 + 1] = modelStream.ReadSingle( );
-            newNode.position[v * 3 + 2] = modelStream.ReadSingle( );
-
-            newNode.normal[v * 3] = modelStream.ReadSingle( );
-            newNode.normal[v * 3 + 1] = modelStream.ReadSingle( );
-            newNode.normal[v * 3 + 2] = modelStream.ReadSingle( );
-
-            newNode.texture0[v * 2] = modelStream.ReadSingle( );
-            newNode.texture0[v * 2 + 1] = 1 - modelStream.ReadSingle( );
+            newNode.position[v] = new Vector3( modelStream.ReadSingle( ),modelStream.ReadSingle( ),modelStream.ReadSingle( ) );
+            newNode.normal[v] = new Vector3( modelStream.ReadSingle( ),modelStream.ReadSingle( ),modelStream.ReadSingle( ) );
+            newNode.texture0[v] = new Vector2( modelStream.ReadSingle( ),modelStream.ReadSingle( ) );
 
             modelStream.BaseStream.Position += 12; //tangents
           }
@@ -339,33 +292,24 @@ namespace KN5
           }
 
           newNode.vertexCount = modelStream.ReadInt32( );
-          newNode.position = new float[newNode.vertexCount * 3];
-          newNode.normal = new float[newNode.vertexCount * 3];
-          newNode.texture0 = new float[newNode.vertexCount * 2];
+          newNode.position = new Vector3[newNode.vertexCount];
+          newNode.normal = new Vector3[newNode.vertexCount];
+          newNode.texture0 = new Vector2[newNode.vertexCount];
 
           for( int v = 0; v < newNode.vertexCount; v++ )
           {
-            newNode.position[v * 3] = modelStream.ReadSingle( );
-            newNode.position[v * 3 + 1] = modelStream.ReadSingle( );
-            newNode.position[v * 3 + 2] = modelStream.ReadSingle( );
-
-            newNode.normal[v * 3] = modelStream.ReadSingle( );
-            newNode.normal[v * 3 + 1] = modelStream.ReadSingle( );
-            newNode.normal[v * 3 + 2] = modelStream.ReadSingle( );
-
-            newNode.texture0[v * 2] = modelStream.ReadSingle( );
-            newNode.texture0[v * 2 + 1] = 1 - modelStream.ReadSingle( );
+            newNode.position[v] = new Vector3( modelStream.ReadSingle( ),modelStream.ReadSingle( ),modelStream.ReadSingle( ) );
+            newNode.normal[v] = new Vector3( modelStream.ReadSingle( ),modelStream.ReadSingle( ),modelStream.ReadSingle( ) );
+            newNode.texture0[v] = new Vector2( modelStream.ReadSingle( ),modelStream.ReadSingle( ) );
 
             modelStream.BaseStream.Position += 44; //tangents & weights
           }
-
           int indexCount = modelStream.ReadInt32();
           newNode.indices = new ushort[indexCount];
           for( int i = 0; i < indexCount; i++ )
           {
             newNode.indices[i] = modelStream.ReadUInt16( );
           }
-
           newNode.materialID = modelStream.ReadInt32( );
           modelStream.BaseStream.Position += 12;
 
@@ -381,12 +325,6 @@ namespace KN5
       else
       {
         newNode.hmatrix = matrixMult( newNode.hmatrix,nodeList[parentID].hmatrix );
-
-        newNode.translation = new float[3] { newNode.tmatrix[3,0],newNode.tmatrix[3,1],newNode.tmatrix[3,2] };
-        
-        newNode.translation[0] += nodeList[parentID].translation[0];
-        newNode.translation[1] += nodeList[parentID].translation[1];
-        newNode.translation[2] += nodeList[parentID].translation[2];
       }
 
       nodeList.Add( newNode );
@@ -435,7 +373,7 @@ namespace KN5
       return mm;
     }
 
-    private static float[] MatrixToEuler( float[,] transf )
+    private static Vector3 MatrixToEuler( float[,] transf )
     {
       double heading = 0;
       double attitude = 0;
@@ -489,20 +427,22 @@ namespace KN5
       double c1 = Math.Cos(bank);
       heading = Math.Atan2(s1 * transf[2, 0] - c1 * transf[1, 0], c1 * transf[1, 1] - s1 * transf[2, 1]);*/
 
+      /*
       attitude *= 180 / Math.PI;
       heading *= 180 / Math.PI;
       bank *= 180 / Math.PI;
+      */
 
-      return new float[3] { (float)bank,(float)attitude,(float)heading };
+      return new Vector3( (float)bank,(float)attitude,(float)heading );
     }
 
-    private static float[] ScaleFromMatrix( float[,] transf )
+    private static Vector3 ScaleFromMatrix( float[,] transf )
     {
       double scaleX = Math.Sqrt(transf[0, 0] * transf[0, 0] + transf[1, 0] * transf[1, 0] + transf[2, 0] * transf[2, 0]);
       double scaleY = Math.Sqrt(transf[0, 1] * transf[0, 1] + transf[1, 1] * transf[1, 1] + transf[2, 1] * transf[2, 1]);
       double scaleZ = Math.Sqrt(transf[0, 2] * transf[0, 2] + transf[1, 2] * transf[1, 2] + transf[2, 2] * transf[2, 2]);
 
-      return new float[3] { (float)scaleX,(float)scaleY,(float)scaleZ };
+      return new Vector3( (float)scaleX,(float)scaleY,(float)scaleZ );
     }
 
     private static string ReadStr( BinaryReader str,int len )
