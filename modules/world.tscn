@@ -1,0 +1,35 @@
+[gd_scene load_steps=7 format=3 uid="uid://cnxhl0hgvwjmo"]
+
+[ext_resource type="PackedScene" uid="uid://cpggahcf04tml" path="res://modules/tracks/ACTrack.tscn" id="1_2tfr4"]
+[ext_resource type="Script" uid="uid://bd84l1xibwy56" path="res://modules/World.cs" id="1_l5lfs"]
+[ext_resource type="PackedScene" uid="uid://cb1ujyj7qqsql" path="res://modules/vehicle/vehicle.tscn" id="2_vqr18"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_vqr18"]
+sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
+ground_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
+
+[sub_resource type="Sky" id="Sky_l5lfs"]
+sky_material = SubResource("ProceduralSkyMaterial_vqr18")
+
+[sub_resource type="Environment" id="Environment_14dmp"]
+background_mode = 2
+sky = SubResource("Sky_l5lfs")
+tonemap_mode = 2
+glow_enabled = true
+
+[node name="World" type="Node3D"]
+script = ExtResource("1_l5lfs")
+
+[node name="Environment" type="Node3D" parent="."]
+
+[node name="Sun" type="DirectionalLight3D" parent="Environment"]
+transform = Transform3D(-0.8660254, -0.43301278, 0.25, 0, 0.49999997, 0.86602545, -0.50000006, 0.75, -0.43301266, 0, 0, 0)
+shadow_enabled = true
+
+[node name="Environment" type="WorldEnvironment" parent="Environment"]
+environment = SubResource("Environment_14dmp")
+
+[node name="ACTrack" parent="." instance=ExtResource("1_2tfr4")]
+
+[node name="Vehicle" parent="." instance=ExtResource("2_vqr18")]
+transform = Transform3D(0.101941764, 0, -0.9947904, 0, 1, 0, 0.9947904, 0, 0.101941764, 0, -59.516487, -10.147696)

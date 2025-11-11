@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://cpggahcf04tml"]
+
+[ext_resource type="Script" uid="uid://dfugsmye0txng" path="res://modules/tracks/scripts/ACTrack.cs" id="1_3rsce"]
+
+[node name="ACTrack" type="Node3D"]
+script = ExtResource("1_3rsce")

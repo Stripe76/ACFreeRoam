@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="ACTracks"
-run/main_scene="uid://cpggahcf04tml"
+run/main_scene="uid://cnxhl0hgvwjmo"
 config/features=PackedStringArray("4.5", "C#", "Forward Plus")
 config/icon="res://icon.svg"
 

@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://dk1khwe726d6n"]
+
+[ext_resource type="Script" uid="uid://cjlakpcd4opka" path="res://modules/cars/scripts/ACCar.cs" id="1_kl0ux"]
+
+[node name="ACCar" type="Node3D"]
+script = ExtResource("1_kl0ux")

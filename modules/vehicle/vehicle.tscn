@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3 uid="uid://cb1ujyj7qqsql"]
+
+[ext_resource type="PackedScene" uid="uid://pgnbq6wlvvic" path="res://modules/player/player_flat.tscn" id="1_ta6r5"]
+[ext_resource type="PackedScene" uid="uid://dk1khwe726d6n" path="res://modules/cars/ACCar.tscn" id="2_guu22"]
+
+[node name="Vehicle" type="Node3D"]
+
+[node name="PlayerFlat" parent="." instance=ExtResource("1_ta6r5")]
+
+[node name="ACCar" parent="." instance=ExtResource("2_guu22")]
