@@ -15,36 +15,7 @@ public class ACImport(Node3D self)
 {
 	private readonly Node3D self = self;
 	
-	public void LoadCar( string filename,bool loadTextures=true )
-	{
-		//var physics = AddNode( "Physics" );
-		var physics = new StaticBody3D( )
-		{
-			Name = "Physics",
-		};
-		self.AddChild( physics );
-		physics.Owner = self;
-		
-		var visuals = AddNode( "Visuals" );
-		var dynamics = AddNode( "Dynamics" );
-
-		try
-		{
-			kn5Model model = Kn5Import.readKN5( filename );
-
-			List<Material> materials = [];
-			if( loadTextures )
-				materials = CreateMaterials( model );
-
-			CreateMeshes( model,materials,physics,visuals,dynamics,null );
-		}
-		catch( Exception e )
-		{
-			GD.Print( e );
-			throw;
-		}
-	}
-	public void LoadTrack( string filename,bool loadTextures=true )
+	public void LoadFile( string filename,bool loadTextures=true )
 	{
 		//var physics = AddNode( "Physics" );
 		var physics = new StaticBody3D( )
@@ -76,7 +47,34 @@ public class ACImport(Node3D self)
 		}
 	}
 
-	private Node3D AddNode( string name, Node3D parent = null )
+	protected virtual Node3D GetParent( int parentID,string name,Node3D node,Node3D physics,Node3D visual,Node3D dynamics,Node3D placeholders,List<Node3D> nodes )
+	{
+		if( parentID > 0 )
+			return nodes[parentID];
+		
+		Node3D parent = visual;
+		if( name.StartsWith( "AC_" ) )
+		{
+			parent = placeholders;
+
+			if( name.StartsWith( "AC_CREW_" ) )
+			{
+				parent = dynamics;
+				parent = GetNode( parent,"Crews" );
+			}
+			else if( name.StartsWith( "AC_START_" ) )
+				parent = GetNode( parent,"Grids" );
+			else if( name.StartsWith( "AC_PIT_" ) )
+				parent = GetNode( parent,"Pits" );
+			else if( name.StartsWith( "AC_TIME_" ) || name.StartsWith( "AC_HOTLAP_" ))
+				parent = GetNode( parent,"Timings" );
+			else if( name.StartsWith( "AC_AUDIO_" ) )
+				parent = GetNode( parent,"Audios" );
+		}
+		return parent;
+	}
+
+	protected Node3D AddNode( string name, Node3D parent = null )
 	{
 		parent ??= self;
 		
@@ -89,7 +87,7 @@ public class ACImport(Node3D self)
 		
 		return node;
 	}
-	private Node3D GetNode( Node3D parent,string name,bool create = true )
+	protected Node3D GetNode( Node3D parent,string name,bool create = true )
 	{
 		Node3D node = (Node3D)parent.GetNodeOrNull( name );
 		if( node == null )
@@ -153,11 +151,18 @@ public class ACImport(Node3D self)
 					};
 					if( isVisual )
 					{
+						((ArrayMesh)meshInstance.Mesh).SurfaceSetName( 0,model.materials[ksNode.materialID].name );
 						meshInstance.Mesh.SurfaceSetMaterial( 0,materials[ksNode.materialID] );
+					}
+					else
+					{
+						meshInstance.Visible = false;
 					}
 					if( isPhysics )
 					{
-						//GD.Print(ksNode.name);
+						//kn5Material ksMaterial = model.materials[ksNode.materialID];
+						//GD.Print($"{ksMaterial.name}: {ksMaterial.shaderProps}");
+						//GD.Print(ksNode.);
 						meshInstance.CreateTrimeshCollision(  );
 
 						if( meshInstance.GetChildCount( ) > 0 )
@@ -169,6 +174,7 @@ public class ACImport(Node3D self)
 								staticBody.RemoveChild( collision );
 								
 								physics.AddChild( collision );
+								collision.Name = ksNode.name;
 								collision.Owner = self;
 							}
 							meshInstance.RemoveChild( staticBody );
@@ -193,38 +199,14 @@ public class ACImport(Node3D self)
 	
 	private void AddToParent( int parentID,string name,Node3D node,Node3D physics,Node3D visual,Node3D dynamics,Node3D placeholders,List<Node3D> nodes )
 	{
-		Node3D parent = visual;
-		if( parentID > 0 )
-		{
-			parent = nodes[parentID];
-		}
-		else
-		{
-			if( name.StartsWith( "AC_" ) )
-			{
-				parent = placeholders;
+		Node3D parent = GetParent( parentID,name,node,physics,visual,dynamics,placeholders,nodes );
 
-				if( name.StartsWith( "AC_CREW_" ) )
-				{
-					parent = dynamics;
-					parent = GetNode( parent,"Crews" );
-				}
-				else if( name.StartsWith( "AC_START_" ) )
-					parent = GetNode( parent,"Grids" );
-				else if( name.StartsWith( "AC_PIT_" ) )
-					parent = GetNode( parent,"Pits" );
-				else if( name.StartsWith( "AC_TIME_" ) || name.StartsWith( "AC_HOTLAP_" ))
-					parent = GetNode( parent,"Timings" );
-				else if( name.StartsWith( "AC_AUDIO_" ) )
-					parent = GetNode( parent,"Audios" );
-			}
-		}
 		parent.AddChild( node );
 		node.Owner = self;
 				
 		nodes.Add( node );
 	}
-	
+
 	private static ArrayMesh CreateSurface( ACMesh mesh,ArrayMesh arrayMesh )
 	{
 		Array array = new Array( );
@@ -249,6 +231,8 @@ public class ACImport(Node3D self)
 		List<Material> materials = [];
 		foreach( var ksMaterial in model.materials )
 		{
+			//GD.Print($"{ksMaterial.name}: {ksMaterial.shaderProps}");
+			
 			var material = new StandardMaterial3D( );
 			var texName = ksMaterial.txDiffuse;
 			kn5Texture ksTexture = model.textures[texName];
@@ -261,14 +245,132 @@ public class ACImport(Node3D self)
 			//texImage.GenerateMipmaps( );
 
 			material.AlbedoTexture = ImageTexture.CreateFromImage( texImage );
-			if( texName.Contains( "tree" ) || texName.Contains( "people" ) || texName.Contains( "pine" ) )
+			string trans = (texName + " " + ksMaterial.name).ToLower( );
+			if( trans.Contains( "tree" ) ||
+			    trans.Contains( "people" ) ||
+			    trans.Contains( "pine" ) ||
+			    trans.Contains( "vetro" ) ||
+			    trans.Contains( "vetri" ) )
 				material.Transparency = BaseMaterial3D.TransparencyEnum.Alpha;
+			//if( ksMaterial.ksDiffuse < 1.0 )
+			//	material.Transparency = BaseMaterial3D.TransparencyEnum.Alpha;
 			
 			materials.Add( material );	
 		}
 		return materials;
 	}
 }
+
+public class ACImportTrack(Node3D self) : ACImport( self )
+{
+}
+
+public class ACImportCar( Node3D self ) : ACImport( self )
+{
+	protected override Node3D GetParent( int parentID,string name,Node3D node,Node3D physics,Node3D visual,Node3D dynamics,Node3D placeholders,List<Node3D> nodes )
+	{
+		Node3D parent = base.GetParent( parentID,name,node,physics,visual,dynamics,placeholders,nodes );
+		if( name.EndsWith( "_LIGHT" ) )
+		{
+			parent = dynamics;
+			parent = GetNode( parent,"Lights" );
+		}
+		else if( name.EndsWith( "WHEEL_LF" ) ||
+		         name.EndsWith( "WHEEL_RF" ) ||
+		         name.EndsWith( "WHEEL_LR" ) ||
+		         name.EndsWith( "WHEEL_RR" ) ||
+		         name.EndsWith( "SUSP_LF" ) ||
+		         name.EndsWith( "SUSP_RF" ) ||
+		         name.EndsWith( "SUSP_LR" ) ||
+		         name.EndsWith( "SUSP_RR" ) ||
+		         name.StartsWith( "DISC_" ) )
+		{
+			parent = dynamics;
+			parent = GetNode( parent,"Wheels" );
+
+			if( name.EndsWith( "_LF" ) )
+				parent = GetNode( parent,"LeftFront" );
+			else if( name.EndsWith( "_RF" ) )
+				parent = GetNode( parent,"RightFront" );
+			else if( name.EndsWith( "_LR" ) )
+				parent = GetNode( parent,"LeftRear" );
+			else if( name.EndsWith( "_RR" ) )
+				parent = GetNode( parent,"RightRear" );
+
+			parent.Position = node.Position;
+			node.Position -= parent.Position;
+		}
+		else if( name.StartsWith( "STEER_" ) )
+		{
+			parent = dynamics;
+			parent = GetNode( parent,"Steerings" );
+
+			if( name.EndsWith( "_LR" ) )
+				parent = GetNode( parent,"LowRes" );
+			else if( name.EndsWith( "_HR" ) )
+				parent = GetNode( parent,"HighRes" );
+		}
+		else if( name.StartsWith( "COCKPIT_" ) )
+		{
+			parent = dynamics;
+			parent = GetNode( parent,"Cockpits" );
+
+			if( name.EndsWith( "_LR" ) )
+				parent = GetNode( parent,"LowRes" );
+			else if( name.EndsWith( "_HR" ) )
+				parent = GetNode( parent,"HighRes" );
+		}
+		else if( name.StartsWith( "DOOR_" ) || name.StartsWith( "INT_DOOR_" ) )
+		{
+			parent = dynamics;
+			parent = GetNode( parent,"Doors" );
+
+			if( name.EndsWith( "_R" ) || name.StartsWith( "DOOR_R" ) )
+			{
+				parent = GetNode( parent,"Right" );
+				
+				parent.Position = node.Position;
+				node.Position -= parent.Position;
+			}
+			else if( name.EndsWith( "_L" ) || name.StartsWith( "DOOR_L" ) )
+			{
+				parent = GetNode( parent,"Left" );
+				
+				parent.Position = node.Position;
+				node.Position -= parent.Position;
+			}
+		}
+		else if( name.StartsWith( "WIPER_" ) )
+		{
+			parent = dynamics;
+			parent = GetNode( parent,"Wipers" );
+		}
+		else if( name.EndsWith( "_BUMPER" ) )
+		{
+			parent = dynamics;
+			parent = GetNode( parent,"Bumpers" );
+		}
+		else if( name.StartsWith( "DAMAGE_" ) )
+		{
+			parent = dynamics;
+			parent = GetNode( parent,"Damages" );
+
+			parent.Visible = false;
+		}
+		else if( name.StartsWith( "EXHAUST" ) )
+		{
+			parent = placeholders;
+			parent = GetNode( parent,"Exhausts" );
+		}
+		else if( name.StartsWith( "FLYCAM_" ) )
+		{
+			parent = placeholders;
+			parent = GetNode( parent,"Cameras" );
+		}
+		return parent;
+	}
+}
+
 
 internal struct ACMesh
 {

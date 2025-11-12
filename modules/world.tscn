@@ -1,8 +1,14 @@
-[gd_scene load_steps=7 format=3 uid="uid://cnxhl0hgvwjmo"]
+[gd_scene load_steps=13 format=3 uid="uid://cnxhl0hgvwjmo"]
 
 [ext_resource type="PackedScene" uid="uid://cpggahcf04tml" path="res://modules/tracks/ACTrack.tscn" id="1_2tfr4"]
 [ext_resource type="Script" uid="uid://bd84l1xibwy56" path="res://modules/World.cs" id="1_l5lfs"]
+[ext_resource type="PackedScene" uid="uid://clgdsk2dyck7w" path="res://framework/physics/physics_toggle.tscn" id="2_14dmp"]
 [ext_resource type="PackedScene" uid="uid://cb1ujyj7qqsql" path="res://modules/vehicle/vehicle.tscn" id="2_vqr18"]
+[ext_resource type="Script" uid="uid://cua30yu6cbp2v" path="res://framework/inputs/scripts/controller_input.gd" id="5_dtodh"]
+[ext_resource type="Script" uid="uid://m63h3gd5iuux" path="res://modules/accelerate.gd" id="6_bu8lo"]
+[ext_resource type="Script" uid="uid://lk0426dt5a5y" path="res://modules/just_released.gd" id="7_noyac"]
+[ext_resource type="Script" uid="uid://dle4p4u0oeoaf" path="res://modules/steering.gd" id="8_i5cau"]
+[ext_resource type="Script" uid="uid://wfgugolg114n" path="res://modules/center.gd" id="9_i5cau"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_vqr18"]
 sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
@@ -20,6 +26,8 @@ glow_enabled = true
 [node name="World" type="Node3D"]
 script = ExtResource("1_l5lfs")
 
+[node name="PhysicsToggle" parent="." instance=ExtResource("2_14dmp")]
+
 [node name="Environment" type="Node3D" parent="."]
 
 [node name="Sun" type="DirectionalLight3D" parent="Environment"]
@@ -32,4 +40,39 @@ environment = SubResource("Environment_14dmp")
 [node name="ACTrack" parent="." instance=ExtResource("1_2tfr4")]
 
 [node name="Vehicle" parent="." instance=ExtResource("2_vqr18")]
-transform = Transform3D(0.101941764, 0, -0.9947904, 0, 1, 0, 0.9947904, 0, 0.101941764, 0, -59.516487, -10.147696)
+transform = Transform3D(0.25129205, -0.03512512, -0.9672738, -0.010312867, 0.9991874, -0.03896324, 0.96785635, 0.019766517, 0.25072563, 0.06848361, -56.43653, -10.068598)
+linear_velocity = Vector3(-1.8278901e-11, 2.1792404e-10, -3.9479137e-10)
+angular_velocity = Vector3(-4.652065e-12, 2.2186242e-10, 1.318411e-10)
+
+[node name="Up" type="Node" parent="Vehicle"]
+script = ExtResource("5_dtodh")
+value = 1.0
+metadata/_custom_type_script = "uid://cua30yu6cbp2v"
+
+[node name="IsPressed" type="Node" parent="Vehicle/Up"]
+script = ExtResource("6_bu8lo")
+
+[node name="JustReleased" type="Node" parent="Vehicle/Up"]
+script = ExtResource("7_noyac")
+
+[node name="Left" type="Node" parent="Vehicle"]
+script = ExtResource("5_dtodh")
+value = -1.0
+metadata/_custom_type_script = "uid://cua30yu6cbp2v"
+
+[node name="IsPressed" type="Node" parent="Vehicle/Left"]
+script = ExtResource("8_i5cau")
+
+[node name="JustReleased" type="Node" parent="Vehicle/Left"]
+script = ExtResource("9_i5cau")
+
+[node name="Right" type="Node" parent="Vehicle"]
+script = ExtResource("5_dtodh")
+value = 1.0
+metadata/_custom_type_script = "uid://cua30yu6cbp2v"
+
+[node name="IsPressed" type="Node" parent="Vehicle/Right"]
+script = ExtResource("8_i5cau")
+
+[node name="JustReleased" type="Node" parent="Vehicle/Right"]
+script = ExtResource("9_i5cau")

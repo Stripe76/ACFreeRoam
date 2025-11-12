@@ -129,7 +129,7 @@ namespace ACTracks.KN5
             {
               string propName = ReadStr( binStream,binStream.ReadInt32( ) );
               float propValue = binStream.ReadSingle( );
-              newMaterial.shaderProps += propName + " = " + propValue.ToString( ) + "&cr;&lf;";
+              newMaterial.shaderProps += propName + " = " + propValue.ToString( ) + "; ";
 
               switch( propName )
               {
