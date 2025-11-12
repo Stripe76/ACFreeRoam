@@ -8,30 +8,43 @@
 size = Vector3(1.485, 1.5, 3.2)
 
 [node name="Vehicle" type="VehicleBody3D"]
-steering = 0.28797933
+mass = 1000.0
 script = ExtResource("1_6wep7")
 
 [node name="PlayerFlat" parent="." instance=ExtResource("1_ta6r5")]
 transform = Transform3D(1, 0, 0, 0, 0.9443419, -0.32896554, 0, 0.32896554, 0.9443419, 0, 2.827053, -4.7577796)
 
 [node name="ACCar" parent="." instance=ExtResource("2_guu22")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.9823382, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.64154446, 0.45221722)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.27059227, 0)
 shape = SubResource("BoxShape3D_guu22")
 
 [node name="FLWheel" type="VehicleWheel3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.7, -0.5, 1)
 use_as_steering = true
+wheel_radius = 0.2
+suspension_stiffness = 50.0
+suspension_max_force = 600.0
 
 [node name="FRWheel" type="VehicleWheel3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.6989692, -0.5, 1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7, -0.5, 1)
 use_as_steering = true
+wheel_radius = 0.2
+suspension_stiffness = 50.0
+suspension_max_force = 600.0
 
 [node name="RLWheel" type="VehicleWheel3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.84037167, -0.5, -0.7874044)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7, -0.5, -1)
 use_as_traction = true
+wheel_radius = 0.2
+suspension_stiffness = 50.0
+suspension_max_force = 600.0
 
 [node name="RRWheel" type="VehicleWheel3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.7, -0.75466156, -1.1451249)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.7, -0.5, -1)
 use_as_traction = true
+wheel_radius = 0.2
+suspension_stiffness = 50.0
+suspension_max_force = 600.0

@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://b5w6y447fpdnq"]
+
+[ext_resource type="Script" uid="uid://qgm788dy4mwg" path="res://modules/inputs/scripts/joypad.gd" id="1_d77jw"]
+
+[node name="Joypad" type="Node"]
+script = ExtResource("1_d77jw")

@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://c5b1grybbdgua"]
+
+[ext_resource type="Script" uid="uid://bhi8kwn5gqgsk" path="res://modules/inputs/scripts/GenerateInputMap.cs" id="1_6kdnq"]
+
+[node name="GenerateInputMap" type="Node"]
+script = ExtResource("1_6kdnq")
