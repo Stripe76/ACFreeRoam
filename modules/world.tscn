@@ -1,6 +1,5 @@
-[gd_scene load_steps=13 format=3 uid="uid://cnxhl0hgvwjmo"]
+[gd_scene load_steps=16 format=3 uid="uid://cnxhl0hgvwjmo"]
 
-[ext_resource type="PackedScene" uid="uid://cpggahcf04tml" path="res://modules/tracks/ACTrack.tscn" id="1_2tfr4"]
 [ext_resource type="Script" uid="uid://cuo486pdkj2ds" path="res://modules/world.gd" id="1_i5cau"]
 [ext_resource type="PackedScene" uid="uid://clgdsk2dyck7w" path="res://framework/physics/physics_toggle.tscn" id="2_14dmp"]
 [ext_resource type="PackedScene" uid="uid://c5b1grybbdgua" path="res://modules/inputs/generate_input_map.tscn" id="2_nnvxs"]
@@ -8,10 +7,14 @@
 [ext_resource type="PackedScene" uid="uid://dbd8xabtetwfa" path="res://modules/inputs/inputs.tscn" id="3_nnvxs"]
 [ext_resource type="PackedScene" uid="uid://bc10u2q8jik34" path="res://modules/inputs/keyboard.tscn" id="4_pynwh"]
 [ext_resource type="PackedScene" uid="uid://b5w6y447fpdnq" path="res://modules/inputs/joypad.tscn" id="5_pynwh"]
+[ext_resource type="PackedScene" uid="uid://5eq3frx5ifc0" path="res://modules/tracks/track.tscn" id="7_i5cau"]
+[ext_resource type="PackedScene" uid="uid://bcth6aokstx71" path="res://modules/ui/ui.tscn" id="9_i5cau"]
+[ext_resource type="Shader" uid="uid://b6mu2acd53ew8" path="res://shaders/sharpness.gdshader" id="10_nnvxs"]
 
-[sub_resource type="Curve" id="Curve_nnvxs"]
-_data = [Vector2(0, 0), 0.0, 1.0, 0, 1, Vector2(1, 1), 1.0, 0.0, 1, 0]
-point_count = 2
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_pynwh"]
+shader = ExtResource("10_nnvxs")
+shader_parameter/blur_sharp = -5.0
+shader_parameter/pixel = 1.0
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_vqr18"]
 sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
@@ -25,18 +28,36 @@ background_mode = 2
 sky = SubResource("Sky_l5lfs")
 tonemap_mode = 2
 glow_enabled = true
+adjustment_enabled = true
+adjustment_brightness = 1.1
+adjustment_contrast = 1.1
+adjustment_saturation = 0.75
 
-[node name="World" type="Node3D"]
+[sub_resource type="Curve" id="Curve_nnvxs"]
+_data = [Vector2(0, 0), 0.0, 1.0, 0, 1, Vector2(1, 1), 1.0, 0.0, 1, 0]
+point_count = 2
+
+[node name="World" type="Node3D" groups=["UI"]]
 script = ExtResource("1_i5cau")
 
-[node name="GenerateInputMap" parent="." instance=ExtResource("2_nnvxs")]
+[node name="PostProcess" type="Control" parent="."]
+process_mode = 1
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
-[node name="Inputs" parent="." instance=ExtResource("3_nnvxs")]
-
-[node name="Keyboard" parent="Inputs" instance=ExtResource("4_pynwh")]
-accelerator_curve = SubResource("Curve_nnvxs")
-
-[node name="Joypad" parent="Inputs" instance=ExtResource("5_pynwh")]
+[node name="Sharpness" type="ColorRect" parent="PostProcess"]
+material = SubResource("ShaderMaterial_pynwh")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="PhysicsToggle" parent="." instance=ExtResource("2_14dmp")]
 
@@ -49,9 +70,22 @@ shadow_enabled = true
 [node name="Environment" type="WorldEnvironment" parent="Environment"]
 environment = SubResource("Environment_14dmp")
 
-[node name="ACTrack" parent="." instance=ExtResource("1_2tfr4")]
+[node name="Game" type="Node3D" parent="."]
+process_mode = 1
 
-[node name="Vehicle" parent="." instance=ExtResource("2_vqr18")]
-transform = Transform3D(0.25129205, -0.03512512, -0.9672738, -0.010312867, 0.9991874, -0.03896324, 0.96785635, 0.019766517, 0.25072563, 0.06848361, -56.43653, -10.068598)
-linear_velocity = Vector3(-1.8278901e-11, 2.1792404e-10, -3.9479137e-10)
-angular_velocity = Vector3(-4.652065e-12, 2.2186242e-10, 1.318411e-10)
+[node name="Track" parent="Game" instance=ExtResource("7_i5cau")]
+
+[node name="Vehicle" parent="Game" instance=ExtResource("2_vqr18")]
+
+[node name="UI" parent="." instance=ExtResource("9_i5cau")]
+process_mode = 2
+visible = false
+
+[node name="GenerateInputMap" parent="." instance=ExtResource("2_nnvxs")]
+
+[node name="Inputs" parent="." instance=ExtResource("3_nnvxs")]
+
+[node name="Keyboard" parent="Inputs" instance=ExtResource("4_pynwh")]
+accelerator_curve = SubResource("Curve_nnvxs")
+
+[node name="Joypad" parent="Inputs" instance=ExtResource("5_pynwh")]

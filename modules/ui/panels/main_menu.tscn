@@ -1,0 +1,93 @@
+[gd_scene load_steps=7 format=3 uid="uid://dyqrnbixbd1ig"]
+
+[ext_resource type="Script" uid="uid://b0fbgfh5kpkrn" path="res://framework/menus/buttons_menu.gd" id="1_gmtdw"]
+[ext_resource type="Script" uid="uid://csvkqhq7idd0b" path="res://modules/ui/panels/main_menu.gd" id="1_hapee"]
+[ext_resource type="PackedScene" uid="uid://cebajgvqc1hm6" path="res://modules/ui/menus/main.tscn" id="2_hapee"]
+
+[sub_resource type="Animation" id="Animation_ravvj"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Main:spread_y")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [50.0]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Main:opacity")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [1.0]
+}
+
+[sub_resource type="Animation" id="Animation_hapee"]
+resource_name = "expand"
+length = 0.2
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Main:spread_y")
+tracks/0/interp = 2
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.19999999),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [0.0, 60.0]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Main:opacity")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.2),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [0.0, 1.0]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_6ug3h"]
+_data = {
+&"RESET": SubResource("Animation_ravvj"),
+&"expand": SubResource("Animation_hapee")
+}
+
+[node name="MainMenu" type="Panel" groups=["UI"]]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_hapee")
+
+[node name="Main" type="Control" parent="." node_paths=PackedStringArray("menu_item")]
+clip_contents = true
+anchors_preset = 0
+offset_right = 357.0
+offset_bottom = 361.0
+script = ExtResource("1_gmtdw")
+menu_item = NodePath("../MenuItems")
+expand_state = 1
+spread_y = 50.0
+opacity = 1.0
+
+[node name="MenuItems" parent="." instance=ExtResource("2_hapee")]
+title = "MenuItems"
+
+[node name="ExpandCollapse" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_6ug3h")
+}

@@ -1,0 +1,24 @@
+[gd_scene load_steps=3 format=3 uid="uid://cebajgvqc1hm6"]
+
+[ext_resource type="Script" uid="uid://dn1ycvpl1l1fs" path="res://framework/menus/menu_item.gd" id="1_axpca"]
+[ext_resource type="PackedScene" uid="uid://cpjlg87xvbr4f" path="res://framework/menus/menu_item.tscn" id="2_10y41"]
+
+[node name="Main" type="Node"]
+script = ExtResource("1_axpca")
+title = "Main"
+metadata/_custom_type_script = "uid://dn1ycvpl1l1fs"
+
+[node name="Tracks and Cars" parent="." instance=ExtResource("2_10y41")]
+title = "Tracks and Cars"
+command = "select_panel"
+parameter = "tracks"
+
+[node name="Controllers" parent="." instance=ExtResource("2_10y41")]
+title = "Controllers"
+command = "select_panel"
+parameter = "controllers"
+
+[node name="Weather" parent="." instance=ExtResource("2_10y41")]
+title = "Weather"
+command = "select_panel"
+parameter = "weather"

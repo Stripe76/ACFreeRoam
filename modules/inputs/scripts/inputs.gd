@@ -1,3 +1,4 @@
+class_name Inputs
 extends Node
 
 @export var accelerator : float:

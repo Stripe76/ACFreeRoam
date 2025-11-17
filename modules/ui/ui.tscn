@@ -1,0 +1,34 @@
+[gd_scene load_steps=4 format=3 uid="uid://bcth6aokstx71"]
+
+[ext_resource type="PackedScene" uid="uid://dyqrnbixbd1ig" path="res://modules/ui/panels/main_menu.tscn" id="1_fbikm"]
+[ext_resource type="Script" uid="uid://bsjx8hx104yfr" path="res://modules/ui/ui.gd" id="1_xm1fi"]
+[ext_resource type="PackedScene" uid="uid://pf3u8piljgti" path="res://modules/ui/panels/track_and_cars.tscn" id="2_kjuuh"]
+
+[node name="UI" type="Control" groups=["UI"]]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_xm1fi")
+
+[node name="MainMenu" parent="." instance=ExtResource("1_fbikm")]
+layout_mode = 1
+offset_left = 25.0
+offset_top = 12.0
+offset_right = -1499.0
+offset_bottom = -1013.0
+
+[node name="MainPanel" type="Control" parent="."]
+layout_mode = 1
+anchor_left = 0.0375
+anchor_top = 0.06759259
+anchor_right = 0.96787494
+anchor_bottom = 0.94625926
+offset_right = -0.3199463
+offset_bottom = 0.039978027
+metadata/_edit_use_anchors_ = true
+
+[node name="TracksAndCars" parent="MainPanel" instance=ExtResource("2_kjuuh")]
+layout_mode = 1

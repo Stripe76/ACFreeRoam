@@ -1,0 +1,11 @@
+[gd_scene load_steps=4 format=3 uid="uid://c82y88v8wanrk"]
+
+[ext_resource type="Script" uid="uid://d0jmx5y5scxo7" path="res://modules/ui/panels/track_selection/scripts/TrackSelection.cs" id="1_jbd6a"]
+[ext_resource type="PackedScene" uid="uid://cpjad730wtf07" path="res://modules/ui/panels/item_selection/item.tscn" id="2_mvlp3"]
+[ext_resource type="PackedScene" uid="uid://bvdax3f7gshvi" path="res://modules/ui/panels/item_selection/group.tscn" id="2_ugyrg"]
+
+[node name="TrackSelection" type="HBoxContainer"]
+size_flags_horizontal = 3
+script = ExtResource("1_jbd6a")
+ItemScene = ExtResource("2_mvlp3")
+GroupScene = ExtResource("2_ugyrg")

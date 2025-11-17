@@ -12,7 +12,7 @@ mass = 1000.0
 script = ExtResource("1_6wep7")
 
 [node name="PlayerFlat" parent="." instance=ExtResource("1_ta6r5")]
-transform = Transform3D(1, 0, 0, 0, 0.9443419, -0.32896554, 0, 0.32896554, 0.9443419, 0, 2.827053, -4.7577796)
+transform = Transform3D(1, 0, 0, 0, 0.99999994, 0, 0, 0, 0.99999994, 0.33322215, 0.58837175, 0.1585784)
 
 [node name="ACCar" parent="." instance=ExtResource("2_guu22")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.64154446, 0.45221722)
@@ -48,3 +48,5 @@ use_as_traction = true
 wheel_radius = 0.2
 suspension_stiffness = 50.0
 suspension_max_force = 600.0
+
+[editable path="ACCar"]

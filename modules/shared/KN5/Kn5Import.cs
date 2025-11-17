@@ -73,7 +73,7 @@ namespace ACTracks.KN5
 
   public class Kn5Import
   {
-    public static kn5Model readKN5( string kn5File )
+    public static kn5Model? readKN5( string kn5File )
     {
       using( BinaryReader binStream = new BinaryReader( File.OpenRead( kn5File ) ) )
       {

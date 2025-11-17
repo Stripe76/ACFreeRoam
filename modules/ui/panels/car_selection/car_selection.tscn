@@ -1,0 +1,13 @@
+[gd_scene load_steps=4 format=3 uid="uid://i1hfrhp6kona"]
+
+[ext_resource type="Script" uid="uid://cpoqbx3hlt38g" path="res://modules/ui/panels/car_selection/scripts/CarSelection.cs" id="1_xrt4a"]
+[ext_resource type="PackedScene" uid="uid://7sv7wmrldcka" path="res://modules/ui/panels/car_selection/car_item.tscn" id="2_xrt4a"]
+[ext_resource type="PackedScene" uid="uid://bvdax3f7gshvi" path="res://modules/ui/panels/item_selection/group.tscn" id="3_774bu"]
+
+[node name="CarSelection" type="HBoxContainer"]
+size_flags_horizontal = 3
+script = ExtResource("1_xrt4a")
+ItemScene = ExtResource("2_xrt4a")
+GroupScene = ExtResource("3_774bu")
+ItemCommand = "select_car"
+ListParameter = "/mnt/data/Steam_Windows/steamapps/common/assettocorsa/content/cars/"

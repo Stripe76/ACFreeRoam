@@ -6,6 +6,8 @@ public partial class GenerateInputMap : Node
 {
 	public static void GenerateMap( string iniFile )
 	{
+		AddAction( "Pause",[Key.Escape] );
+
 		AddAction( "Up",[Key.W,Key.Up] );
 		AddAction( "Down",[Key.S,Key.Down] );
 		AddAction( "Left",[Key.S,Key.Left] );

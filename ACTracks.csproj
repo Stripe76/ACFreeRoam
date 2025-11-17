@@ -1,12 +1,19 @@
 <Project Sdk="Godot.NET.Sdk/4.5.1">
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <EnableDynamicLoading>true</EnableDynamicLoading>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <Folder Include="modules\shared\" />
+    <Folder Include="modules\shared\ACLibrary\" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Pfim" Version="0.11.3" />
+    <PackageReference Include="YamlDotNet" Version="16.3.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="modules\tracks\scripts\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Remove="modules\tracks\scripts\**" />
   </ItemGroup>
 </Project>

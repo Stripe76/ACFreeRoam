@@ -1,0 +1,39 @@
+[gd_scene load_steps=5 format=3 uid="uid://bvdax3f7gshvi"]
+
+[ext_resource type="Script" uid="uid://bbedmaqt62d1f" path="res://modules/ui/panels/item_selection/scripts/Group.cs" id="1_c2pi6"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_c2pi6"]
+bg_color = Color(0.921487, 0.44880497, 3.85046e-07, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_npjo4"]
+bg_color = Color(0, 0, 0, 0.5019608)
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+border_color = Color(0, 0, 0, 0.5058824)
+
+[sub_resource type="Theme" id="Theme_npjo4"]
+Button/styles/pressed = SubResource("StyleBoxFlat_c2pi6")
+Label/styles/normal = SubResource("StyleBoxFlat_npjo4")
+
+[node name="Group" type="VBoxContainer"]
+offset_right = 250.0
+offset_bottom = 54.0
+size_flags_horizontal = 3
+theme = SubResource("Theme_npjo4")
+script = ExtResource("1_c2pi6")
+
+[node name="Title" type="Button" parent="."]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+toggle_mode = true
+
+[node name="Control" type="PanelContainer" parent="."]
+layout_mode = 2
+
+[node name="Items" type="VBoxContainer" parent="Control"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[connection signal="toggled" from="Title" to="." method="_on_title_toggled"]

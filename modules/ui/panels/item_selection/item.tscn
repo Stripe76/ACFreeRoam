@@ -1,0 +1,81 @@
+[gd_scene load_steps=5 format=3 uid="uid://cpjad730wtf07"]
+
+[ext_resource type="Script" uid="uid://d3plmel0k02na" path="res://modules/ui/panels/item_selection/scripts/Item.cs" id="1_vjbxb"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bh3v3"]
+bg_color = Color(0, 0.36913243, 3.85046e-07, 0.49803922)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vjbxb"]
+bg_color = Color(0, 0.38679972, 5.2943824e-07, 0.49803922)
+
+[sub_resource type="Theme" id="Theme_bh3v3"]
+Button/styles/hover = SubResource("StyleBoxFlat_bh3v3")
+Button/styles/normal = SubResource("StyleBoxFlat_vjbxb")
+Label/colors/font_shadow_color = Color(0, 0, 0, 1)
+Label/constants/shadow_offset_x = 2
+Label/constants/shadow_offset_y = 2
+Label/constants/shadow_outline_size = 2
+
+[node name="Item" type="Panel"]
+custom_minimum_size = Vector2(250, 150)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -1520.0
+offset_bottom = -780.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+theme = SubResource("Theme_bh3v3")
+script = ExtResource("1_vjbxb")
+
+[node name="Image" type="TextureRect" parent="."]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(250, 150)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+expand_mode = 1
+stretch_mode = 6
+
+[node name="Title" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 23.0
+grow_horizontal = 2
+text = "Item title"
+autowrap_mode = 2
+
+[node name="Button" type="Control" parent="."]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(200, 50)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Load" type="Button" parent="."]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -8.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "Load track"
+
+[connection signal="focus_entered" from="." to="." method="_on_focus_entered"]
+[connection signal="mouse_entered" from="Button" to="." method="_on_focus_entered"]
+[connection signal="mouse_exited" from="Button" to="." method="_on_focus_exited"]
+[connection signal="mouse_entered" from="Load" to="." method="_on_focus_entered"]
+[connection signal="mouse_exited" from="Load" to="." method="_on_focus_exited"]

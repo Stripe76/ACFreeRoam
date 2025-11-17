@@ -15,9 +15,23 @@ run/main_scene="uid://cnxhl0hgvwjmo"
 config/features=PackedStringArray("4.5", "C#", "Forward Plus")
 config/icon="res://icon.svg"
 
+[display]
+
+window/size/viewport_width=1920
+window/size/viewport_height=1080
+window/vsync/vsync_mode=0
+
 [dotnet]
 
 project/assembly_name="ACTracks"
+
+[global_group]
+
+UI=""
+
+[gui]
+
+theme/custom="uid://cv4enkncsw73t"
 
 [input]
 
@@ -35,3 +49,7 @@ SteeringRight={
 [physics]
 
 3d/physics_engine="Jolt Physics"
+
+[rendering]
+
+textures/default_filters/anisotropic_filtering_level=4
