@@ -7,3 +7,4 @@
 *.old.import
 *.old
 *.user
+.editorconfig
