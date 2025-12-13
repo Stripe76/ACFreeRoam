@@ -1,9 +1,9 @@
 class_name Vehicle
 extends VehicleBody3D
 
-@onready var player : Node3D = $PlayerFlat
 @onready var ac_car = $ACCar
-@onready var inputs : Inputs = $"../../Inputs"
+@onready var inputs : Inputs = $"%Inputs"
+@onready var player : Node3D = $PlayerFlat
 
 var steering_wheel : Node3D
 
@@ -43,18 +43,11 @@ func load_car(ac_folder: String,car: String,skin: String):
 			player.position = pos + steering_wheel.position + Vector3( 0,0.3,-0.3 )
 		steering_wheel = steering_wheel.get_node("STEER_HR")
 	
-	var mesh = get_node_or_null("ACCar/Dynamics/Cockpits/LowRes")
-	if mesh: 
-		mesh.visible = false
-	mesh = get_node_or_null("ACCar/Dynamics/Steerings/LowRes")
-	if mesh: 
-		mesh.visible = false
+	hide_mesh("ACCar/Dynamics/Cockpits/LowRes")
+	hide_mesh("ACCar/Dynamics/Steerings/LowRes")
 
 
-var current_car = -1
-const cars_list = [
-	"/mnt/data/Steam_Windows/steamapps/common/assettocorsa/content/cars/ks_nissan_gtr/nissan_gtr.kn5",
-	#"/mnt/data/Steam_Windows/steamapps/common/assettocorsa/content/cars/ks_ford_gt40/ford_gt40.kn5",
-	"/mnt/data/Steam_Windows/steamapps/common/assettocorsa/content/cars/ferrari_458/ferrari_458.kn5",
-	"/mnt/data/Steam_Windows/steamapps/common/assettocorsa/content/cars/abarth500/abarth500.kn5",
-]
+func hide_mesh(mesh_name: String):
+	var mesh = get_node_or_null(mesh_name)
+	if mesh: 
+		mesh.visible = false

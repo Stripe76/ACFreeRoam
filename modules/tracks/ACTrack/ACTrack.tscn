@@ -2,5 +2,5 @@
 
 [ext_resource type="Script" uid="uid://dfugsmye0txng" path="res://modules/tracks/ACTrack/scripts/ACTrack.cs" id="1_s10bb"]
 
-[node name="AcTrack" type="Node3D"]
+[node name="ACTrack" type="Node3D"]
 script = ExtResource("1_s10bb")

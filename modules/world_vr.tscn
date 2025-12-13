@@ -1,0 +1,42 @@
+[gd_scene load_steps=6 format=3 uid="uid://bsav58srl28dh"]
+
+[ext_resource type="Script" uid="uid://cm23y4h632e4s" path="res://modules/world_vr.gd" id="1_yq20m"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_4jywg"]
+sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
+ground_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
+
+[sub_resource type="Sky" id="Sky_8d23j"]
+sky_material = SubResource("ProceduralSkyMaterial_4jywg")
+
+[sub_resource type="Environment" id="Environment_ve1vy"]
+background_mode = 2
+sky = SubResource("Sky_8d23j")
+tonemap_mode = 2
+glow_enabled = true
+
+[sub_resource type="BoxMesh" id="BoxMesh_yq20m"]
+
+[node name="WorldVr" type="Node3D"]
+script = ExtResource("1_yq20m")
+
+[node name="XROrigin3D" type="XROrigin3D" parent="."]
+
+[node name="XRCamera3D" type="XRCamera3D" parent="XROrigin3D"]
+
+[node name="Left" type="XRController3D" parent="XROrigin3D"]
+tracker = &"left_hand"
+
+[node name="Right" type="XRController3D" parent="XROrigin3D"]
+tracker = &"right_hand"
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_ve1vy")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.8660254, -0.43301278, 0.25, 0, 0.49999997, 0.86602545, -0.50000006, 0.75, -0.43301266, 0, 0, 0)
+shadow_enabled = true
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -3)
+mesh = SubResource("BoxMesh_yq20m")

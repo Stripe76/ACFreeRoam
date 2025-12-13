@@ -2,6 +2,7 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ACTracks.KN5
 {
@@ -9,8 +10,8 @@ namespace ACTracks.KN5
   {
     public int version;
 
-    public string modelDir;
-    public string modelName;
+    public string modelDir = "";
+    public string modelName = "";
 
     public readonly List<kn5Node> nodes = [];
     public readonly List<kn5Material> materials = [];
@@ -21,30 +22,20 @@ namespace ACTracks.KN5
   {
     public string name = "Default";
     public string shader = "";
-    
-    public float ksAmbient = 0.6f;
-    public float ksDiffuse = 0.6f;
-    public float ksSpecular = 0.9f;
-    public float ksSpecularEXP = 1.0f;
-    public float diffuseMult = 1.0f;
-    public float normalMult = 1.0f;
-    public float useDetail = 0.0f;
-    public float detailUVMultiplier = 1.0f;
 
-    public string txDiffuse;
-    public string txNormal;
-    public string txDetail;
+    public SortedList<string,string> textures = [];
+    public SortedList<string,float> parameters = [];
 
     public string shaderProps = "";
   }
 
-  public class kn5Texture
+  public class kn5Texture( string texName,byte[] data )
   {
-    public string name;
+    public string name = texName;
     
     public float UVScaling = 1.0f;
     
-    public byte[] texData;
+    public byte[] texData = data;
   }
   
   public class kn5Node
@@ -73,6 +64,10 @@ namespace ACTracks.KN5
 
   public class Kn5Import
   {
+    #if DEBUG
+    private static List<string> _unsupported_params = [];
+    #endif
+    
     public static kn5Model? readKN5( string kn5File )
     {
       using( BinaryReader binStream = new BinaryReader( File.OpenRead( kn5File ) ) )
@@ -97,12 +92,7 @@ namespace ACTracks.KN5
             int texSize = binStream.ReadInt32();
             byte[] texBuffer = binStream.ReadBytes(texSize);
 
-            kn5Texture tex = new kn5Texture( )
-            {
-              name = texName,
-              texData = texBuffer
-            };
-            newModel.textures[texName] = tex;
+            newModel.textures[texName] = new kn5Texture( texName,texBuffer );
             /*
             using( BinaryWriter texWriter = new BinaryWriter( File.Create( Path.Join( newModel.modelDir,"textures",texName ) ) ) )
             {
@@ -129,38 +119,12 @@ namespace ACTracks.KN5
             {
               string propName = ReadStr( binStream,binStream.ReadInt32( ) );
               float propValue = binStream.ReadSingle( );
+
+              newMaterial.parameters.Add( propName,propValue );
               newMaterial.shaderProps += propName + " = " + propValue.ToString( ) + "; ";
 
-              switch( propName )
-              {
-                case "ksAmbient":
-                  newMaterial.ksAmbient = propValue;
-                  break;
-                case "ksDiffuse":
-                  newMaterial.ksDiffuse = propValue;
-                  break;
-                case "ksSpecular":
-                  newMaterial.ksSpecular = propValue;
-                  break;
-                case "ksSpecularEXP":
-                  newMaterial.ksSpecularEXP = propValue;
-                  break;
-                case "diffuseMult":
-                  newMaterial.diffuseMult = propValue;
-                  break;
-                case "normalMult":
-                  newMaterial.normalMult = propValue;
-                  break;
-                case "useDetail":
-                  newMaterial.useDetail = propValue;
-                  break;
-                case "detailUVMultiplier":
-                  newMaterial.detailUVMultiplier = propValue;
-                  break;
-              }
               binStream.BaseStream.Position += 36;
             }
-
             int textures = binStream.ReadInt32();
             for( int t = 0; t < textures; t++ )
             {
@@ -168,26 +132,16 @@ namespace ACTracks.KN5
               int sampleSlot = binStream.ReadInt32();
               string texName = ReadStr(binStream, binStream.ReadInt32());
 
-              newMaterial.shaderProps += sampleName + " = " + texName + "&cr;&lf;";
-
-              switch( sampleName )
-              {
-                case "txDiffuse":
-                  newMaterial.txDiffuse = texName;
-                  break;
-                case "txNormal":
-                  newMaterial.txNormal = texName;
-                  break;
-                case "txDetail":
-                  newMaterial.txDetail = texName;
-                  break;
-              }
+              newMaterial.textures.Add( sampleName,texName );
+              newMaterial.shaderProps += sampleName + " = " + texName + ";";
             }
             newModel.materials.Add( newMaterial );
           }
           #endregion
 
           (long start,long children) = readNodes( binStream,newModel.nodes,-1 ); //recursive
+
+          //readEncryption( binStream,newModel );
 
           return newModel;
         }
@@ -196,6 +150,31 @@ namespace ACTracks.KN5
           Console.WriteLine( "Unknown file type." );
           return null;
         }
+      }
+    }
+    
+    private static void readEncryption( BinaryReader binStream,kn5Model newModel )
+    {
+      while( binStream.BaseStream.Position < binStream.BaseStream.Length )
+      {
+        string encName = ReadStr( binStream,binStream.ReadInt32( ) );
+        int l =  binStream.ReadInt32();
+        binStream.BaseStream.Position += l;
+
+        if( encName.StartsWith( "ver." ) )
+        {
+          try
+          {
+            kn5Node node = newModel.nodes.Single( n => n.name == encName.Substring( 4,encName.Length - 6 ) );
+            if( node != null )
+              GD.Print( $"-- {node.name}: {node.vertexCount}" );
+          }
+          catch( Exception e )
+          {
+            GD.Print( $"-- ERROR: {encName}" );
+          }
+        }
+        GD.Print($"{encName} ({l})");
       }
     }
 

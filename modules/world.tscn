@@ -11,34 +11,43 @@
 [ext_resource type="PackedScene" uid="uid://bcth6aokstx71" path="res://modules/ui/ui.tscn" id="9_i5cau"]
 [ext_resource type="Shader" uid="uid://b6mu2acd53ew8" path="res://shaders/sharpness.gdshader" id="10_nnvxs"]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_pynwh"]
-shader = ExtResource("10_nnvxs")
-shader_parameter/blur_sharp = -5.0
-shader_parameter/pixel = 1.0
-
-[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_vqr18"]
-sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
-ground_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
-
-[sub_resource type="Sky" id="Sky_l5lfs"]
-sky_material = SubResource("ProceduralSkyMaterial_vqr18")
-
-[sub_resource type="Environment" id="Environment_14dmp"]
-background_mode = 2
-sky = SubResource("Sky_l5lfs")
-tonemap_mode = 2
-glow_enabled = true
-adjustment_enabled = true
-adjustment_brightness = 1.1
-adjustment_contrast = 1.1
-adjustment_saturation = 0.75
-
 [sub_resource type="Curve" id="Curve_nnvxs"]
 _data = [Vector2(0, 0), 0.0, 1.0, 0, 1, Vector2(1, 1), 1.0, 0.0, 1, 0]
 point_count = 2
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_pynwh"]
+shader = ExtResource("10_nnvxs")
+shader_parameter/blur_sharp = 1.0000000894072
+shader_parameter/pixel = 1.0
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_nnvxs"]
+sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
+ground_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
+
+[sub_resource type="Sky" id="Sky_pynwh"]
+sky_material = SubResource("ProceduralSkyMaterial_nnvxs")
+
+[sub_resource type="Environment" id="Environment_svnph"]
+background_mode = 2
+sky = SubResource("Sky_pynwh")
+tonemap_mode = 2
+fog_density = 0.001
+volumetric_fog_density = 0.01
+adjustment_enabled = true
+adjustment_saturation = 0.85
+
 [node name="World" type="Node3D" groups=["UI"]]
 script = ExtResource("1_i5cau")
+
+[node name="GenerateInputMap" parent="." instance=ExtResource("2_nnvxs")]
+
+[node name="Inputs" parent="." instance=ExtResource("3_nnvxs")]
+unique_name_in_owner = true
+
+[node name="Keyboard" parent="Inputs" instance=ExtResource("4_pynwh")]
+accelerator_curve = SubResource("Curve_nnvxs")
+
+[node name="Joypad" parent="Inputs" instance=ExtResource("5_pynwh")]
 
 [node name="PostProcess" type="Control" parent="."]
 process_mode = 1
@@ -53,11 +62,14 @@ grow_vertical = 2
 [node name="Sharpness" type="ColorRect" parent="PostProcess"]
 material = SubResource("ShaderMaterial_pynwh")
 layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
+anchors_preset = -1
+anchor_left = 0.346875
+anchor_top = 0.25833333
+anchor_right = 0.6713542
+anchor_bottom = 0.66851854
 grow_horizontal = 2
 grow_vertical = 2
+metadata/_edit_use_anchors_ = true
 
 [node name="PhysicsToggle" parent="." instance=ExtResource("2_14dmp")]
 
@@ -68,24 +80,17 @@ transform = Transform3D(-0.8660254, -0.43301278, 0.25, 0, 0.49999997, 0.86602545
 shadow_enabled = true
 
 [node name="Environment" type="WorldEnvironment" parent="Environment"]
-environment = SubResource("Environment_14dmp")
+environment = SubResource("Environment_svnph")
 
 [node name="Game" type="Node3D" parent="."]
 process_mode = 1
 
 [node name="Track" parent="Game" instance=ExtResource("7_i5cau")]
+unique_name_in_owner = true
 
 [node name="Vehicle" parent="Game" instance=ExtResource("2_vqr18")]
+unique_name_in_owner = true
 
 [node name="UI" parent="." instance=ExtResource("9_i5cau")]
 process_mode = 2
 visible = false
-
-[node name="GenerateInputMap" parent="." instance=ExtResource("2_nnvxs")]
-
-[node name="Inputs" parent="." instance=ExtResource("3_nnvxs")]
-
-[node name="Keyboard" parent="Inputs" instance=ExtResource("4_pynwh")]
-accelerator_curve = SubResource("Curve_nnvxs")
-
-[node name="Joypad" parent="Inputs" instance=ExtResource("5_pynwh")]

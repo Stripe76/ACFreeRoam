@@ -4,16 +4,21 @@ using System.Collections.Generic;
 using System.IO;
 using Framework.IniFiles;
 using ACTracks.KN5;
-
 using Array = Godot.Collections.Array;
 
 namespace ACTracks.ACImport;
 
 public abstract class ACImport(Node3D self)
 {
+#if DEBUG
+	private static List<string> _done_shaders = ["ksTree","ksPerPixel","ksPerPixelReflection","ksPerPixelMultiMap_NMDetail","ksPerPixelMultiMap","ksMultilayer_fresnel_nm",
+		"ksMultilayer","ksFlags","ksPerPixelAT","ksGrass","ksPerPixelAlpha","ksPerPixelMultiMapSimpleRefl","ksWindscreen","ksPerPixelNM","ksTyres",
+		"ksBrakeDisc","ksPerPixelMultiMap_damage_dirt","ksPerPixelAT_NM","ksBrokenGlass","ksPerPixelNM_UVMult","ksSkinnedMesh","GL"];
+#endif
 	private readonly Node3D self = self;
 
 	public abstract void Load( string acFolder,string file,string variant,bool loadTextures = true );
+
 	protected virtual Node3D GetParent( int parentID,string name,Node3D node,Node3D physics,Node3D visual,Node3D dynamics,Node3D placeholders,List<Node3D> nodes )
 	{
 		if( parentID > 0 )
@@ -41,7 +46,7 @@ public abstract class ACImport(Node3D self)
 		return parent;
 	}
 
-	protected Node3D AddNode<T>( string name, Node3D parent = null ) where T : Node3D,new( )
+	protected Node3D AddNode<T>( string name, Node3D? parent = null ) where T : Node3D,new( )
 	{
 		parent ??= self;
 		
@@ -69,59 +74,120 @@ public abstract class ACImport(Node3D self)
 		return node;
 	}
 
-	protected static List<Material> CreateMaterials( kn5Model model )
+	protected static List<Material> CreateMaterials( kn5Model model,Debug? debug = null)
 	{
 		List<Material> materials = [];
+		SortedList<string,Image> images = [];
+		
 		foreach( var ksMaterial in model.materials )
 		{
-			//GD.Print($"{ksMaterial.name}: {ksMaterial.shaderProps}");
-			var material = new StandardMaterial3D( );
-			material.SetName( ksMaterial.name );
-			var texName = ksMaterial.txDiffuse;
+			var material = new ShaderMaterial( );
+			material.SetName( $"{ksMaterial.name} ({ksMaterial.shader})" );
+			material.SetShader( GetShader( ksMaterial ) );
 
-			if( model.textures.Count > 0 && model.textures.TryGetValue( texName, out kn5Texture? ksTexture ) )
+			//var texName = ksMaterial.txDiffuse;
+			foreach( var textureName in ksMaterial.textures.Keys )
 			{
-                //GD.Print( $"{ksTexture.name} - {ksTexture.texData.Length}" );
-                ksTexture.texData[28] = 0;
-
-				var texImage = new Image( );
-				texImage.LoadDdsFromBuffer( ksTexture.texData );
-				//texImage.GenerateMipmaps( );
-				material.AlbedoTexture = ImageTexture.CreateFromImage( texImage );
-
-				texName = ksMaterial.txNormal;
-				if( !string.IsNullOrEmpty( texName ) && model.textures.TryGetValue( texName,out kn5Texture value ) )
+				string texValue = ksMaterial.textures[textureName];
+				if( model.textures.TryGetValue( texValue,out kn5Texture? ksTexture ) )
 				{
-					ksTexture = value;
-					if( ksTexture.name != "" && ksTexture.texData.Length > 0 )
+					if( !images.TryGetValue( texValue,out var texImage ) )
 					{
-						//GD.Print( $"{ksTexture.name} - {ksTexture.texData.Length}" );
-						ksTexture.texData[28] = 0;
-
 						texImage = new Image( );
-						texImage.LoadDdsFromBuffer( ksTexture.texData );
-						//texImage.GenerateMipmaps( );
+						if( texValue.EndsWith( ".dds" ) )
+						{
+							//GD.Print( $"{ksTexture.name} - {ksTexture.texData.Length}" );
+							ksTexture.texData[28] = 0;
 
-						material.NormalEnabled = true;
-						material.NormalTexture = ImageTexture.CreateFromImage( texImage );
+							texImage.LoadDdsFromBuffer( ksTexture.texData );
+							if( texImage.IsCompressed( ) && textureName == "txDiffuse" )
+							{
+								//GD.Print( $"Mipmaps: {ksTexture.name}" );
+								texImage.Decompress( );
+								texImage.ResizeToPo2( false,Image.Interpolation.Nearest );
+								//texImage.SrgbToLinear(  );
+								texImage.GenerateMipmaps( );
+								texImage.Compress( Image.CompressMode.S3Tc );
+							}
+						}
+						else if( texValue.EndsWith( ".png" ) )
+						{
+							GD.Print( $"Loading PNG: {texValue}" );
+							texImage.LoadPngFromBuffer( ksTexture.texData );
+						}
+						images.Add( texValue,texImage );
 					}
+					material.SetShaderParameter( textureName,ImageTexture.CreateFromImage( texImage ) );
 				}
 			}
-			string trans = (texName + " " + ksMaterial.name).ToLower( );
-			if( trans.Contains( "tree" ) ||
-			    trans.Contains( "people" ) ||
-			    trans.Contains( "pine" ) ||
-			    trans.Contains( "trasp" ) ||
-			    trans.Contains( "glass" ) ||
-			    trans.Contains( "vetro" ) ||
-			    trans.Contains( "vetri" ) )
-				material.Transparency = BaseMaterial3D.TransparencyEnum.Alpha;
-			//if( ksMaterial.ksDiffuse < 1.0 )
-			//	material.Transparency = BaseMaterial3D.TransparencyEnum.Alpha;
-			
+			foreach( var param in ksMaterial.parameters.Keys )
+			{
+				float value = ksMaterial.parameters[param];
+				
+				material.SetShaderParameter( param,value );
+				
+				if( param == "multR" )
+					material.SetShaderParameter( "uv1_scale",new Vector3(value,value,value) );
+			}
 			materials.Add( material );	
+#if DEBUG
+			if( debug != null )
+			{
+				//GD.Print(material.GetName(  ));
+				var debugData = new Godot.Collections.Dictionary( );
+				debugData["Name"] = ksMaterial.name;
+				debugData["Shader"] = ksMaterial.shader;
+				debugData["Params"] = ksMaterial.shaderProps;
+				debugData["Material"] = material;
+				debug.Shaders.Add( debugData );
+			}
+#endif
 		}
 		return materials;
+	}
+
+	private static Shader GetShader(kn5Material material)
+	{
+#if DEBUG
+		if( !_done_shaders.Contains( material.shader ) )
+		{
+			GD.Print( $"Shader: {material.shader}" );
+
+			_done_shaders.Add( material.shader );
+		}
+		foreach( var param in material.shaderProps  )
+		{
+			
+		}
+#endif
+		switch( material.shader )
+		{
+			case "ksTree":
+			case "ksPerPixel":
+			case "ksPerPixelReflection":
+			case "ksPerPixelMultiMap_NMDetail":
+			case "ksPerPixelMultiMap":
+			case "ksMultilayer_fresnel_nm":
+			case "ksMultilayer":
+			case "ksFlags":
+			case "ksPerPixelAT":
+			case "ksGrass":
+			case "ksPerPixelAlpha":
+			case "ksPerPixelMultiMapSimpleRefl":
+			case "ksWindscreen":
+			case "ksPerPixelNM":
+			case "ksTyres":
+			case "ksBrakeDisc":
+			case "ksPerPixelMultiMap_damage_dirt":
+			case "ksPerPixelAT_NM":
+			case "ksBrokenGlass":
+			case "ksPerPixelNM_UVMult":
+			case "ksSkinnedMesh":
+			case "":
+			case "GL":
+				return GD.Load<Shader>( $"res://shaders/kunos/{material.shader}.gdshader" );
+		}
+		return GD.Load<Shader>( "res://shaders/base.gdshader" );
 	}
 	
 	protected void CreateMeshes( kn5Model model,List<Material> materials,Node3D physics,Node3D visual,Node3D dynamics,Node3D placeholders )
@@ -133,10 +199,13 @@ public abstract class ACImport(Node3D self)
 
 			bool isPhysics = IsPhysicsNode( ksNode );
 			bool isVisual = materialID >= 0 && materialID < materials.Count;
-			
+
 			if( isPhysics && ( ksNode.name.Contains( "WALL" ) || ksNode.name.Contains( "TARMAC" ) ) )
 				isVisual = false;
 			
+			if( isVisual && model.materials[materialID].shader == "ksGrass" )
+				isVisual = false;
+
 			if( ksNode.type == 1 )
 			{
 				Node3D node3D = new Node3D( )
@@ -176,14 +245,14 @@ public abstract class ACImport(Node3D self)
 					};
 					if( isVisual )
 					{
-						((ArrayMesh)meshInstance.Mesh).SurfaceSetName( 0,model.materials[ksNode.materialID].name );
-						meshInstance.Mesh.SurfaceSetMaterial( 0,materials[ksNode.materialID] );
+						((ArrayMesh)meshInstance.Mesh).SurfaceSetName( 0,$"{materialID}: {model.materials[materialID].name} ({model.materials[materialID].shader})" );
+						meshInstance.Mesh.SurfaceSetMaterial( 0,materials[materialID] );
 					}
 					else
 					{
 						meshInstance.Visible = false;
 					}
-					if( isPhysics )
+					if( isPhysics && ksNode.indices.Length > 0 )
 					{
 						//kn5Material ksMaterial = model.materials[ksNode.materialID];
 						//GD.Print($"{ksMaterial.name}: {ksMaterial.shaderProps}");
@@ -256,7 +325,6 @@ public class ACImportTrack(Node3D self) : ACImport( self )
 		var visuals = AddNode<Node3D>( "Visuals" );
 		var dynamics = AddNode<Node3D>( "Dynamics" );
 		var placeholders = AddNode<Node3D>( "Placeholders" );
-
 		
 		List<Material> materials = [];
 		try
@@ -269,14 +337,7 @@ public class ACImportTrack(Node3D self) : ACImport( self )
 				{
 					if( loadTextures )
 					{
-						materials = CreateMaterials( model );
-#if DEBUG
-						foreach( var material in materials )
-						{
-							//GD.Print(material.GetName(  ));
-							debug.Shaders.Add( material );
-						}
-#endif
+						materials = CreateMaterials( model,debug );
 					}
 					CreateMeshes( model,materials,physics,visuals,dynamics,placeholders );
 				}
@@ -323,6 +384,12 @@ public class ACImportCar( Node3D self ) : ACImport( self )
 {
 	public override void Load( string acFolder,string carID,string skinID,bool loadTextures=true )
 	{
+#if DEBUG
+		Debug debug = new Debug( );
+		self.AddChild( debug );
+		debug.Name = "Debug";
+		debug.Owner = self;
+#endif
 		var physics = AddNode<StaticBody3D>( "Physics" );
 		var visuals = AddNode<Node3D>( "Visuals" );
 		var dynamics = AddNode<Node3D>( "Dynamics" );
@@ -335,7 +402,7 @@ public class ACImportCar( Node3D self ) : ACImport( self )
 
 			List<Material> materials = [];
 			if( loadTextures )
-				materials = CreateMaterials( model );
+				materials = CreateMaterials( model,debug );
 
 			CreateMeshes( model,materials,physics,visuals,dynamics,placeholders );
 		}

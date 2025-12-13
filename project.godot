@@ -10,7 +10,7 @@ config_version=5
 
 [application]
 
-config/name="ACTracks"
+config/name="ACFreeRoam"
 run/main_scene="uid://cnxhl0hgvwjmo"
 config/features=PackedStringArray("4.5", "C#", "Forward Plus")
 config/icon="res://icon.svg"
@@ -53,3 +53,12 @@ SteeringRight={
 [rendering]
 
 textures/default_filters/anisotropic_filtering_level=4
+anti_aliasing/screen_space_roughness_limiter/enabled=false
+textures/default_filters/texture_mipmap_bias=-1.0
+environment/defaults/default_clear_color=Color(0, 0, 0, 1)
+
+[xr]
+
+openxr/default_action_map="uid://dki4l02qi4gur"
+openxr/reference_space=2
+openxr/foveation_level=3
