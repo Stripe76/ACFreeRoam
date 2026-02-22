@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://bs67ob65qrkel"]
+
+[ext_resource type="Script" uid="uid://bf6aq0iew5a0g" path="res://modules/tracks/BMTrack/scripts/BMTrack.cs" id="1_cqvps"]
+
+[node name="BMTrack" type="Node3D"]
+script = ExtResource("1_cqvps")

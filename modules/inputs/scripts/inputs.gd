@@ -9,8 +9,8 @@ extends Node
 var input
 
 func _ready() -> void:
-	#input = get_node( "Keyboard" )
-	input = get_node( "Joypad" )
+	input = get_node( "Keyboard" )
+	#input = get_node( "Joypad" )
 
 
 func get_accelerator( )-> float:
