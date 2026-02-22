@@ -2,10 +2,11 @@ class_name Vehicle
 extends VehicleBody3D
 
 @onready var ac_car = $ACCar
-@onready var inputs : Inputs = $"%Inputs"
+@onready var inputs : Inputs = %Inputs
 @onready var player : Node3D = $PlayerFlat
 
 var steering_wheel : Node3D
+
 
 func _process(_delta: float) -> void:
 	if steering_wheel:
@@ -24,13 +25,14 @@ func _physics_process(_delta: float) -> void:
 
 
 func load_car(ac_folder: String,car: String,skin: String):
-	var pos : Vector3 = ac_car.position
+	var pos := Vector3()
 	if ac_car:
+		pos = ac_car.position
 		remove_child(ac_car)
 		ac_car.queue_free()
 		ac_car = null
 	
-	ac_car = ResourceLoader.load("res://modules/cars/ACCar.tscn").instantiate()
+	ac_car = load("res://modules/cars/ACCar.tscn").instantiate()
 	ac_car.name = "ACCar"
 	ac_car.LoadCar( ac_folder,car,skin )
 	ac_car.position = pos

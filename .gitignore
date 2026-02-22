@@ -3,7 +3,7 @@
 .idea/
 /android/
 /resources/
-/framework/
+#/framework/
 *.old
 *.user
 *.import

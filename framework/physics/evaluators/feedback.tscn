@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://bvtfvp3yxcnux"]
+
+[ext_resource type="Script" uid="uid://byrk53qml5w6s" path="res://framework/physics/evaluators/scripts/feedback.gd" id="1_scurw"]
+
+[node name="Feedback" type="Node"]
+script = ExtResource("1_scurw")

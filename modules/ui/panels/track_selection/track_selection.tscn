@@ -9,3 +9,4 @@ size_flags_horizontal = 3
 script = ExtResource("1_jbd6a")
 ItemScene = ExtResource("2_mvlp3")
 GroupScene = ExtResource("2_ugyrg")
+ListParameter = "/mnt/data/Steam_Linux/steamapps/common/assettocorsa/content/tracks/"

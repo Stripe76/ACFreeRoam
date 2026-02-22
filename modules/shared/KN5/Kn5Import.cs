@@ -55,11 +55,11 @@ namespace ACTracks.KN5
 
     public int vertexCount;
     
-    public Vector3[] position;
-    public Vector3[] normal;
-    public Vector2[] texture0;
+    public Vector3[]? position;
+    public Vector3[]? normal;
+    public Vector2[]? texture0;
 
-    public ushort[] indices;
+    public ushort[]? indices;
   }
 
   public class Kn5Import
