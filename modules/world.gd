@@ -2,7 +2,8 @@ extends Node3D
 
 @onready var ui : Control = $"UI"
 @onready var track : Track = $"%Track"
-@onready var vehicle : Vehicle = $"%Vehicle"
+@onready var vehicle : Node3D = $"%Vehicle"
+#@onready var vehicle : Node3D = $Game/car
 
 var xrInterface : XRInterface
 
@@ -22,13 +23,13 @@ func _ready() -> void:
 			
 			XRServer.center_on_hmd(XRServer.RESET_BUT_KEEP_TILT,true)
 	
-	if track and true:
+	if track and false:
 		select_track( "imola","" );
 		select_car( "abarth500","" );
 		
 		var stall : Node3D = track.get_pit_stall( 1 )
-		if stall:
-			vehicle.position = stall.position + Vector3(0,1,0);
+		if stall and vehicle:
+			vehicle.position = stall.position + Vector3(0,5,0);
 	
 	var cancel_event = InputEventAction.new()
 	cancel_event.action = "Pause"
@@ -53,8 +54,8 @@ func select_track(track_id: String,variant_id: String):
 		track.load_track( ac_folder,track_id,variant_id );
 		
 		var stall : Node3D = track.get_pit_stall( 1 )
-		if stall:
-			vehicle.position = stall.position + Vector3(0,1,0);
+		if stall and vehicle:
+			vehicle.position = stall.position + Vector3(0,2,0);
 			vehicle.rotation = stall.rotation
 
 

@@ -22,8 +22,8 @@ void fragment() {
 	//NORMAL_MAP = texture(texture_normal, base_uv).rgb;
 	//NORMAL_MAP_DEPTH = normal_scale;
 	
-	//ALPHA *= albedo.a * albedo_tex.a;
-	//ALPHA_SCISSOR_THRESHOLD = 0.1;
+	ALPHA *= albedo.a * albedo_tex.a;
+	ALPHA_SCISSOR_THRESHOLD = 0.5;
 }
 
 //void light() {

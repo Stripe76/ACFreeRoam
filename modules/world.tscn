@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://cnxhl0hgvwjmo"]
+[gd_scene format=3 uid="uid://cnxhl0hgvwjmo"]
 
 [ext_resource type="Script" uid="uid://cuo486pdkj2ds" path="res://modules/world.gd" id="1_i5cau"]
 [ext_resource type="PackedScene" uid="uid://clgdsk2dyck7w" path="res://framework/physics/physics_toggle.tscn" id="2_14dmp"]
@@ -31,25 +31,30 @@ sky_material = SubResource("ProceduralSkyMaterial_nnvxs")
 background_mode = 2
 sky = SubResource("Sky_pynwh")
 tonemap_mode = 2
-fog_density = 0.001
-volumetric_fog_density = 0.01
+ssao_enabled = true
+ssil_enabled = true
+sdfgi_enabled = true
+sdfgi_use_occlusion = true
+glow_enabled = true
+fog_density = 0.0001
+volumetric_fog_density = 0.001
 adjustment_enabled = true
 adjustment_saturation = 0.85
 
-[node name="World" type="Node3D" groups=["UI"]]
+[node name="World" type="Node3D" unique_id=586556883 groups=["UI"]]
 script = ExtResource("1_i5cau")
 
-[node name="GenerateInputMap" parent="." instance=ExtResource("2_nnvxs")]
+[node name="GenerateInputMap" parent="." unique_id=49486460 instance=ExtResource("2_nnvxs")]
 
-[node name="Inputs" parent="." instance=ExtResource("3_nnvxs")]
+[node name="Inputs" parent="." unique_id=1649399694 instance=ExtResource("3_nnvxs")]
 unique_name_in_owner = true
 
-[node name="Keyboard" parent="Inputs" instance=ExtResource("4_pynwh")]
+[node name="Keyboard" parent="Inputs" unique_id=894289546 instance=ExtResource("4_pynwh")]
 accelerator_curve = SubResource("Curve_nnvxs")
 
-[node name="Joypad" parent="Inputs" instance=ExtResource("5_pynwh")]
+[node name="Joypad" parent="Inputs" unique_id=746114494 instance=ExtResource("5_pynwh")]
 
-[node name="PostProcess" type="Control" parent="."]
+[node name="PostProcess" type="Control" parent="." unique_id=926849540]
 process_mode = 1
 visible = false
 layout_mode = 3
@@ -59,7 +64,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Sharpness" type="ColorRect" parent="PostProcess"]
+[node name="Sharpness" type="ColorRect" parent="PostProcess" unique_id=608974445]
 material = SubResource("ShaderMaterial_pynwh")
 layout_mode = 1
 anchors_preset = -1
@@ -71,26 +76,27 @@ grow_horizontal = 2
 grow_vertical = 2
 metadata/_edit_use_anchors_ = true
 
-[node name="PhysicsToggle" parent="." instance=ExtResource("2_14dmp")]
+[node name="PhysicsToggle" parent="." unique_id=1997478863 instance=ExtResource("2_14dmp")]
 
-[node name="Environment" type="Node3D" parent="."]
+[node name="Environment" type="Node3D" parent="." unique_id=1016739295]
 
-[node name="Sun" type="DirectionalLight3D" parent="Environment"]
+[node name="Sun" type="DirectionalLight3D" parent="Environment" unique_id=1813076390]
 transform = Transform3D(-0.8660254, -0.43301278, 0.25, 0, 0.49999997, 0.86602545, -0.50000006, 0.75, -0.43301266, 0, 0, 0)
 shadow_enabled = true
 
-[node name="Environment" type="WorldEnvironment" parent="Environment"]
+[node name="Environment" type="WorldEnvironment" parent="Environment" unique_id=1633626852]
 environment = SubResource("Environment_svnph")
 
-[node name="Game" type="Node3D" parent="."]
+[node name="Game" type="Node3D" parent="." unique_id=724965106]
 process_mode = 1
 
-[node name="Track" parent="Game" instance=ExtResource("7_i5cau")]
+[node name="Track" parent="Game" unique_id=275456329 instance=ExtResource("7_i5cau")]
 unique_name_in_owner = true
 
-[node name="Vehicle" parent="Game" instance=ExtResource("2_vqr18")]
+[node name="Vehicle" parent="Game" unique_id=689787814 instance=ExtResource("2_vqr18")]
 unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 509, -114, 3191)
 
-[node name="UI" parent="." instance=ExtResource("9_i5cau")]
+[node name="UI" parent="." unique_id=1247360543 instance=ExtResource("9_i5cau")]
 process_mode = 2
 visible = false

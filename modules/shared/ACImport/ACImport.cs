@@ -104,8 +104,7 @@ public abstract class ACImport(Node3D self)
 							{
 								//GD.Print( $"Mipmaps: {ksTexture.name}" );
 								texImage.Decompress( );
-								texImage.ResizeToPo2( false,Image.Interpolation.Nearest );
-								//texImage.SrgbToLinear(  );
+								texImage.ResizeToPo2( false,Image.Interpolation.Trilinear );
 								texImage.GenerateMipmaps( );
 								texImage.Compress( Image.CompressMode.S3Tc );
 							}
@@ -122,12 +121,19 @@ public abstract class ACImport(Node3D self)
 			}
 			foreach( var param in ksMaterial.parameters.Keys )
 			{
-				float value = ksMaterial.parameters[param];
+				if( param == "multA" && ksMaterial.parameters.Keys.Contains( "multA_B" ) && ksMaterial.parameters.Keys.Contains( "multA_C" ) )
+				{
+					float valueB = ksMaterial.parameters["multA_B"];
+					float valueC = ksMaterial.parameters["multA_C"];
+
+					material.SetShaderParameter( "multA",new Vector2( valueB,valueC ) );
+				}
+				else
+				{
+					float value = ksMaterial.parameters[param];
 				
-				material.SetShaderParameter( param,value );
-				
-				if( param == "multR" )
-					material.SetShaderParameter( "uv1_scale",new Vector3(value,value,value) );
+					material.SetShaderParameter( param,value );
+				}
 			}
 			materials.Add( material );	
 #if DEBUG
@@ -200,7 +206,7 @@ public abstract class ACImport(Node3D self)
 			bool isPhysics = IsPhysicsNode( ksNode );
 			bool isVisual = materialID >= 0 && materialID < materials.Count;
 
-			if( isPhysics && ( ksNode.name.Contains( "WALL" ) || ksNode.name.Contains( "TARMAC" ) ) )
+			if( isPhysics && ( ksNode.name.Contains( "WALL" ) || ( isVisual && ksNode.name.Contains( "TARMAC" ) && model.materials[materialID].name == "marshalls" ) ) )
 				isVisual = false;
 			
 			if( isVisual && model.materials[materialID].shader == "ksGrass" )
@@ -222,6 +228,7 @@ public abstract class ACImport(Node3D self)
 				if( ksNode.indices is { Length: > 0 } )
 				{
 					ACMesh mesh = new ACMesh( ksNode.name );
+					AABBTracker aabb = new AABBTracker( );
 					for( int i = 0; i < ksNode.indices.Length; i += 3 )
 					{
 						int index1 = ksNode.indices[i];
@@ -232,16 +239,26 @@ public abstract class ACImport(Node3D self)
 						mesh.vertices.Add( ksNode.position[index2] );
 						mesh.vertices.Add( ksNode.position[index3] );
 
+						aabb.AddVertex( ksNode.position[index1] );
+						aabb.AddVertex( ksNode.position[index2] );
+						aabb.AddVertex( ksNode.position[index3] );
+
 						//mesh.normals.Add( new Vector3( node.normal[index * 3],1-node.normal[index * 3 + 1],node.normal[index * 3 + 2] ) );
 
 						mesh.uvs.Add( ksNode.texture0[index1] );
 						mesh.uvs.Add( ksNode.texture0[index2] );
 						mesh.uvs.Add( ksNode.texture0[index3] );
 					}
+					Vector3 center = aabb.GetCenter( );
+					for( int i = 0; i < mesh.vertices.Count; i++ )
+					{
+						mesh.vertices[i] = mesh.vertices[i] - center;
+					}
 					MeshInstance3D meshInstance = new MeshInstance3D( )
 					{
 						Name = ksNode.name,
-						Mesh = CreateSurface( mesh,new ArrayMesh( ) ) 
+						Mesh = CreateSurface( mesh,new ArrayMesh( ) ),
+						Position = center
 					};
 					if( isVisual )
 					{
@@ -260,6 +277,7 @@ public abstract class ACImport(Node3D self)
 
 						CollisionShape3D collision = new CollisionShape3D( );
 						collision.Name = ksNode.name;
+						collision.Position = center;
 						collision.SetShape( meshInstance.Mesh.CreateTrimeshShape( ) );
 							
 						physics.AddChild( collision );
@@ -325,6 +343,8 @@ public class ACImportTrack(Node3D self) : ACImport( self )
 		var visuals = AddNode<Node3D>( "Visuals" );
 		var dynamics = AddNode<Node3D>( "Dynamics" );
 		var placeholders = AddNode<Node3D>( "Placeholders" );
+
+		physics.Visible = false;
 		
 		List<Material> materials = [];
 		try
@@ -532,5 +552,35 @@ internal struct ACMesh
 	public ACMesh(string name)
 	{
 		this.name = name;
+	}
+}
+
+
+internal class AABBTracker( )
+{
+	public Vector3 Position = new Vector3(float.MaxValue,float.MaxValue,float.MaxValue);
+	public Vector3 End = new Vector3(float.MinValue,float.MinValue,float.MinValue);
+
+	public Vector3 GetCenter( )
+	{
+		return (Position + End) / 2.0f;
+	}
+
+	public void AddVertex( Vector3 v )
+	{
+		if( v.X < Position.X )
+			Position.X = v.X;
+		if( v.X > End.X )
+			End.X = v.X;
+
+		if( v.Y < Position.Y )
+			Position.Y = v.Y;
+		if( v.Y > End.Y )
+			End.Y = v.Y;
+
+		if( v.Z < Position.Z )
+			Position.Z = v.Z;
+		if( v.Z > End.Z )
+			End.Z = v.Z;
 	}
 }

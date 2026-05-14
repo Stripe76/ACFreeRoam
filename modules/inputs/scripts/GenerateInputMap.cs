@@ -10,8 +10,8 @@ public partial class GenerateInputMap : Node
 
 		AddAction( "Up",[Key.W,Key.Up] );
 		AddAction( "Down",[Key.S,Key.Down] );
-		AddAction( "Left",[Key.S,Key.Left] );
-		AddAction( "Right",[Key.S,Key.Right] );
+		AddAction( "Left",[Key.A,Key.Left] );
+		AddAction( "Right",[Key.D,Key.Right] );
 
 		AddAction( "Accelerator",[JoyAxis.TriggerRight] );
 		AddAction( "Brakes",[JoyAxis.TriggerLeft] );

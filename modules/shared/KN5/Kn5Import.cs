@@ -121,9 +121,19 @@ namespace ACTracks.KN5
               float propValue = binStream.ReadSingle( );
 
               newMaterial.parameters.Add( propName,propValue );
-              newMaterial.shaderProps += propName + " = " + propValue.ToString( ) + "; ";
+              newMaterial.shaderProps += propName + "_A = " + propValue + "; ";
 
-              binStream.BaseStream.Position += 36;
+              propValue = binStream.ReadSingle( );
+              if( propValue > 0.0 )
+                newMaterial.parameters.Add( propName+"_B",propValue );
+              newMaterial.shaderProps += propName + "_B = " + propValue + "; ";
+
+              propValue = binStream.ReadSingle( );
+              if( propValue > 0.0 )
+                newMaterial.parameters.Add( propName+"_C",propValue );
+              newMaterial.shaderProps += propName + "_C = " + propValue + "; ";
+
+              binStream.BaseStream.Position += 28;
             }
             int textures = binStream.ReadInt32();
             for( int t = 0; t < textures; t++ )

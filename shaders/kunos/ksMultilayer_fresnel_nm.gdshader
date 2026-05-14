@@ -3,13 +3,14 @@ render_mode blend_mix, depth_draw_opaque, cull_back, diffuse_burley;
 
 uniform vec4 albedo : source_color = vec4(1,1,1,1);
 
-uniform sampler2D txDiffuse : source_color, filter_linear_mipmap, repeat_enable;
-uniform sampler2D txMask : source_color, filter_linear_mipmap, repeat_enable;
-uniform sampler2D txDetailR : source_color, filter_linear_mipmap, repeat_enable;
-uniform sampler2D txDetailG : source_color, filter_linear_mipmap, repeat_enable;
-uniform sampler2D txDetailB : source_color, filter_linear_mipmap, repeat_enable;
-uniform sampler2D txDetailA : source_color, filter_linear_mipmap, repeat_enable;
-uniform sampler2D txDetailNM : source_color, filter_linear_mipmap, repeat_enable;
+uniform sampler2D txMask : source_color, filter_linear_mipmap_anisotropic, repeat_enable;
+uniform sampler2D txDiffuse : source_color, filter_linear_mipmap_anisotropic, repeat_enable;
+
+uniform sampler2D txDetailR : source_color, filter_linear_mipmap_anisotropic, repeat_enable;
+uniform sampler2D txDetailG : source_color, filter_linear_mipmap_anisotropic, repeat_enable;
+uniform sampler2D txDetailB : source_color, filter_linear_mipmap_anisotropic, repeat_enable;
+uniform sampler2D txDetailA : source_color, filter_linear_mipmap_anisotropic, repeat_enable;
+uniform sampler2D txDetailNM : source_color, filter_linear_mipmap_anisotropic, repeat_enable;
 
 uniform float ksAmbient = 1.0;
 uniform float ksDiffuse = 1.0;
@@ -20,14 +21,10 @@ uniform float ksAlphaRef = 0.0;
 uniform float multR = 1.0;
 uniform float multG = 1.0;
 uniform float multB = 1.0;
-uniform float multA = 1.0;
+uniform vec2 multA = vec2(1.0,1.0);
 uniform float magicMult = 1.0;
 
-
 varying vec3 uv1_triplanar_pos;
-
-uniform vec3 uv1_scale;
-uniform vec3 uv1_offset;
 
 void vertex() {
 	vec3 normal = NORMAL;
@@ -43,48 +40,64 @@ void vertex() {
 	BINORMAL = normalize(BINORMAL);
 
 	// UV1 Triplanar: Enabled
-	uv1_triplanar_pos = VERTEX * uv1_scale + uv1_offset;
+	uv1_triplanar_pos = VERTEX;
 	//uv1_triplanar_pos *= vec3(1.0, -1.0, 1.0);
 }
 
-vec4 triplanar_texture(sampler2D p_sampler, vec3 p_triplanar_pos) {
-	return texture(p_sampler,p_triplanar_pos.xz);
+vec4 triplanar_texture(sampler2D p_sampler, vec3 p_triplanar_pos, float scale) {
+	return texture(p_sampler,p_triplanar_pos.xz*scale);
 }
 
 void fragment() {
+	vec4 upos = INV_PROJECTION_MATRIX * vec4(SCREEN_UV * 2.0 - 1.0, FRAGCOORD.z, 1.0);
+	vec3 pixel_position = upos.xyz / upos.w;
+	float dist  = pow((-pixel_position.z) / 5.0,1.0);
+	if( dist > 1.0 )
+		dist = 1.0;
+	
 	vec2 base_uv = UV;
 	
 	vec4 mask = texture(txMask,base_uv);
 	vec4 diffuse = texture(txDiffuse,base_uv);
-	
-	vec4 upos = INV_PROJECTION_MATRIX * vec4(SCREEN_UV * 2.0 - 1.0, FRAGCOORD.z, 1.0);
-	vec3 pixel_position = upos.xyz / upos.w;
-	float dist  = -pixel_position.z / 20.0;
-	dist *= dist;
-	if( dist > 1.0 )
-		dist = 1.0;
 		
-	vec3 color = diffuse.rgb;
-	//color = mix(triplanar_texture(txDetailR,uv1_triplanar_pos).rgb,color,0.5+(dist/2.0));
-	color += triplanar_texture(txDetailR,uv1_triplanar_pos).rgb * .2 * (1.0-dist);
-	//color = mix(color,texture(txDetailR,detail_uv).rgb,mask.r);
-	//color = mix(color,texture(txDetailG,detail_uv).rgb,mask.g);
-	//color = mix(color,texture(txDetailB,detail_uv).rgb,mask.b);
+	vec3 color = diffuse.rgb;// * ksDiffuse;
+
+	vec4 txr = triplanar_texture(txDetailR,uv1_triplanar_pos,multR);
+	vec4 txg = triplanar_texture(txDetailG,uv1_triplanar_pos,multG);
+	vec4 txb = triplanar_texture(txDetailB,uv1_triplanar_pos,multB);
+	vec4 txa = triplanar_texture(txDetailA,uv1_triplanar_pos,multA.x);
+
+	//color = mix(color,mix(color,tx.rgb,mask.r),.5*(1.0-dist));
+	color *= txr.rgb*mask.r + txg.rgb*mask.g + txb.rgb*mask.b + txa.rgb*mask.a;
+	color *= magicMult;
+	//color *= mix(color,txr.rgb*mask.r + txg.rgb*mask.g + txb.rgb*mask.b + txa.rgb*mask.a,.5*(1.0-dist));
+	
+	//tx = triplanar_texture(txDetailG,uv1_triplanar_pos,multG/uv1_scale.x);
+	//color = mix(color,mix(color,tx.rgb,mask.g),.5*(1.0-dist));
+
+	//tx = triplanar_texture(txDetailB,uv1_triplanar_pos,multB/uv1_scale.x);
+	//color = mix(color,mix(color,tx.rgb,mask.b),.5*(1.0-dist));
+
+	//tx = triplanar_texture(txDetailA,uv1_triplanar_pos,uv1_scale.x*20.0);
+	//color = mix(diffuse.rgb,color,1.0-dist);
+	//color = diffuse.rgb * color;
+
 	ALBEDO = color;
-	//ALBEDO = albedo_tex.rgb;
+	//ALBEDO = diffuse.rgb;
 
 	//float metallic_tex = dot(texture(texture_metallic, base_uv), metallic_texture_channel);
 	//METALLIC = metallic_tex * metallic;
-	//SPECULAR = specular;
+	SPECULAR = diffuse.a;
 	
 	//vec4 roughness_texture_channel = vec4(1.0, 0.0, 0.0, 0.0);
 	//float roughness_tex = dot(texture(texture_roughness, base_uv), roughness_texture_channel);
 	//ROUGHNESS = roughness_tex * roughness;
 	
-	//NORMAL_MAP = texture(texture_normal, base_uv).rgb;
-	//NORMAL_MAP_DEPTH = normal_scale;
+	//vec4 tx = triplanar_texture(txDetailNM,uv1_triplanar_pos,2.0);
+	//NORMAL_MAP = tx.rgb;
+	//NORMAL_MAP_DEPTH = .8;
 	
-	//ALPHA = albedo_tex.a;
+	//ALPHA = diffuse.a;
 	//ALPHA_SCISSOR_THRESHOLD = 0.1;
 }
 

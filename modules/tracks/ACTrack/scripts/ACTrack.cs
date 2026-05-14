@@ -8,11 +8,12 @@ public partial class ACTrack : Node3D
 	{
 		if( Engine.IsEditorHint( ) )
 		{
+			new ACImportTrack( this ).Load( "/mnt/data/Steam_Linux/steamapps/common/assettocorsa/content/tracks/","monza","" );
 			//new ACImportTrack( this ).Load( "/mnt/data/Steam_Linux/steamapps/common/assettocorsa/content/tracks/","imola","" );
+			//new ACImportTrack( this ).Load( "/mnt/data/Steam_Linux/steamapps/common/assettocorsa/content/tracks/","la_canyons","freeroam" );
 			//new ACImportTrack( this ).Load( "/mnt/data/Steam_Linux/steamapps/common/assettocorsa/content/tracks/ks_vallelunga/ks_vallelunga.kn5" );
-			//new ACImportTrack( this ).Load( "/mnt/data/Steam_Linux/steamapps/common/assettocorsa/content/tracks/monza/monza.kn5" );
 			//new ACImportTrack( this ).Load( "/mnt/data/Steam_Linux/steamapps/common/assettocorsa/content/tracks/","adc_klutch_kickers_drifters_paradise","" );
-			new ACImportTrack( this ).Load( "/mnt/data/Steam_Linux/steamapps/common/assettocorsa/content/tracks/","ks_nordschleife","nordschleife" );
+			//new ACImportTrack( this ).Load( "/mnt/data/Steam_Linux/steamapps/common/assettocorsa/content/tracks/","ks_nordschleife","nordschleife" );
 		}
 	}
 	
