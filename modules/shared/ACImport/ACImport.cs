@@ -12,7 +12,7 @@ public abstract class ACImport(Node3D self)
 {
 #if DEBUG
 	private static List<string> _done_shaders = ["ksTree","ksPerPixel","ksPerPixelReflection","ksPerPixelMultiMap_NMDetail","ksPerPixelMultiMap","ksMultilayer_fresnel_nm",
-		"ksMultilayer","ksFlags","ksPerPixelAT","ksGrass","ksPerPixelAlpha","ksPerPixelMultiMapSimpleRefl","ksWindscreen","ksPerPixelNM","ksTyres",
+		"ksMultilayer","ksMultilayer_objsp","ksFlags","ksPerPixelAT","ksGrass","ksPerPixelAlpha","ksPerPixelMultiMapSimpleRefl","ksWindscreen","ksPerPixelNM","ksTyres",
 		"ksBrakeDisc","ksPerPixelMultiMap_damage_dirt","ksPerPixelAT_NM","ksBrokenGlass","ksPerPixelNM_UVMult","ksSkinnedMesh","GL"];
 #endif
 	private readonly Node3D self = self;
@@ -173,8 +173,9 @@ public abstract class ACImport(Node3D self)
 			case "ksPerPixelReflection":
 			case "ksPerPixelMultiMap_NMDetail":
 			case "ksPerPixelMultiMap":
-			case "ksMultilayer_fresnel_nm":
 			case "ksMultilayer":
+			case "ksMultilayer_objsp":
+			case "ksMultilayer_fresnel_nm":
 			case "ksFlags":
 			case "ksPerPixelAT":
 			case "ksGrass":
@@ -196,7 +197,7 @@ public abstract class ACImport(Node3D self)
 		return GD.Load<Shader>( "res://shaders/base.gdshader" );
 	}
 	
-	protected void CreateMeshes( kn5Model model,List<Material> materials,Node3D physics,Node3D visual,Node3D dynamics,Node3D placeholders )
+	protected void CreateMeshes( kn5Model model,List<Material> materials,Node3D physics,Node3D visual,Node3D dynamics,Node3D placeholders,bool recenterMeshes )
 	{
 		List<Node3D> nodes = [];
 		foreach( kn5Node ksNode in model.nodes )
@@ -206,7 +207,17 @@ public abstract class ACImport(Node3D self)
 			bool isPhysics = IsPhysicsNode( ksNode );
 			bool isVisual = materialID >= 0 && materialID < materials.Count;
 
-			if( isPhysics && ( ksNode.name.Contains( "WALL" ) || ( isVisual && ksNode.name.Contains( "TARMAC" ) && model.materials[materialID].name == "marshalls" ) ) )
+			if( isPhysics && isVisual &&
+			    (ksNode.name.Contains( "WALL" ) ||
+			     model.materials[materialID].name == "barr" ||
+			     model.materials[materialID].name == "barriers" ||
+			     model.materials[materialID].name == "physics" ||
+			     model.materials[materialID].name == "PHYSICS" ||
+			     model.materials[materialID].name == "marshall" ||
+			     model.materials[materialID].name == "marshalls" ) )
+				isVisual = false;
+
+			if( isVisual && model.materials[materialID].name == "top-ext" )
 				isVisual = false;
 			
 			if( isVisual && model.materials[materialID].shader == "ksGrass" )
@@ -243,16 +254,22 @@ public abstract class ACImport(Node3D self)
 						aabb.AddVertex( ksNode.position[index2] );
 						aabb.AddVertex( ksNode.position[index3] );
 
-						//mesh.normals.Add( new Vector3( node.normal[index * 3],1-node.normal[index * 3 + 1],node.normal[index * 3 + 2] ) );
+						mesh.normals.Add( ksNode.normal[index1] );
+						mesh.normals.Add( ksNode.normal[index2] );
+						mesh.normals.Add( ksNode.normal[index3] );
 
 						mesh.uvs.Add( ksNode.texture0[index1] );
 						mesh.uvs.Add( ksNode.texture0[index2] );
 						mesh.uvs.Add( ksNode.texture0[index3] );
 					}
-					Vector3 center = aabb.GetCenter( );
-					for( int i = 0; i < mesh.vertices.Count; i++ )
+					Vector3 center = new Vector3( );
+					if( recenterMeshes )
 					{
-						mesh.vertices[i] = mesh.vertices[i] - center;
+						center = aabb.GetCenter( );
+						for( int i = 0; i < mesh.vertices.Count; i++ )
+						{
+							mesh.vertices[i] = mesh.vertices[i] - center;
+						}
 					}
 					MeshInstance3D meshInstance = new MeshInstance3D( )
 					{
@@ -315,12 +332,12 @@ public abstract class ACImport(Node3D self)
 		array.Resize( (int)Mesh.ArrayType.Max );
 
 		array[(int)Mesh.ArrayType.Vertex] = mesh.vertices.ToArray( ).AsSpan( );
-		//array[(int)Mesh.ArrayType.Normal] = mesh.normals.ToArray( ).AsSpan( );
+		array[(int)Mesh.ArrayType.Normal] = mesh.normals.ToArray( ).AsSpan( );
 		array[(int)Mesh.ArrayType.TexUV] = mesh.uvs.ToArray( ).AsSpan( );
 
 		SurfaceTool surfaceTool = new SurfaceTool( );
 		surfaceTool.CreateFromArrays( array );
-		surfaceTool.GenerateNormals( false );
+		//surfaceTool.GenerateNormals( false );
 		//surfaceTool.GenerateTangents( );
 
 		surfaceTool.Commit( arrayMesh );
@@ -345,6 +362,7 @@ public class ACImportTrack(Node3D self) : ACImport( self )
 		var placeholders = AddNode<Node3D>( "Placeholders" );
 
 		physics.Visible = false;
+		placeholders.Visible = false;
 		
 		List<Material> materials = [];
 		try
@@ -359,7 +377,7 @@ public class ACImportTrack(Node3D self) : ACImport( self )
 					{
 						materials = CreateMaterials( model,debug );
 					}
-					CreateMeshes( model,materials,physics,visuals,dynamics,placeholders );
+					CreateMeshes( model,materials,physics,visuals,dynamics,placeholders,true );
 				}
 			}
 		}
@@ -424,7 +442,7 @@ public class ACImportCar( Node3D self ) : ACImport( self )
 			if( loadTextures )
 				materials = CreateMaterials( model,debug );
 
-			CreateMeshes( model,materials,physics,visuals,dynamics,placeholders );
+			CreateMeshes( model,materials,physics,visuals,dynamics,placeholders,false );
 		}
 		catch( Exception e )
 		{

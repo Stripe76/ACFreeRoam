@@ -1,0 +1,35 @@
+[gd_scene format=3 uid="uid://cfhmvd3hbchuy"]
+
+[ext_resource type="Script" uid="uid://dsa86hvat02ph" path="res://debug/debug_list/debug.gd" id="1"]
+[ext_resource type="FontFile" uid="uid://cel187bc7g8mp" path="res://debug/assets/JetBrainsMono-Regular.ttf" id="2"]
+
+[sub_resource type="FontFile" id="1"]
+fallbacks = Array[Font]([ExtResource("2")])
+cache/0/variation_coordinates = {}
+cache/0/face_index = 0
+cache/0/embolden = 0.0
+cache/0/transform = Transform2D(1, 0, 0, 1, 0, 0)
+cache/0/spacing_top = 0
+cache/0/spacing_bottom = 0
+cache/0/spacing_space = 0
+cache/0/spacing_glyph = 0
+cache/0/baseline_offset = 0.0
+cache/0/16/0/ascent = 0.0
+cache/0/16/0/descent = 0.0
+cache/0/16/0/underline_position = 0.0
+cache/0/16/0/underline_thickness = 0.0
+cache/0/16/0/scale = 1.0
+
+[node name="debug" type="CanvasLayer" unique_id=1353756415]
+layer = 0
+script = ExtResource("1")
+
+[node name="disp" type="RichTextLabel" parent="." unique_id=764060213]
+anchors_preset = -1
+anchor_left = 0.02
+anchor_top = 0.04
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_fonts/normal_font = SubResource("1")
+text = "test
+test"

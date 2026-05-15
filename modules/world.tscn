@@ -3,12 +3,12 @@
 [ext_resource type="Script" uid="uid://cuo486pdkj2ds" path="res://modules/world.gd" id="1_i5cau"]
 [ext_resource type="PackedScene" uid="uid://clgdsk2dyck7w" path="res://framework/physics/physics_toggle.tscn" id="2_14dmp"]
 [ext_resource type="PackedScene" uid="uid://c5b1grybbdgua" path="res://modules/inputs/generate_input_map.tscn" id="2_nnvxs"]
-[ext_resource type="PackedScene" uid="uid://cb1ujyj7qqsql" path="res://modules/vehicle/vehicle.tscn" id="2_vqr18"]
 [ext_resource type="PackedScene" uid="uid://dbd8xabtetwfa" path="res://modules/inputs/inputs.tscn" id="3_nnvxs"]
 [ext_resource type="PackedScene" uid="uid://bc10u2q8jik34" path="res://modules/inputs/keyboard.tscn" id="4_pynwh"]
 [ext_resource type="PackedScene" uid="uid://b5w6y447fpdnq" path="res://modules/inputs/joypad.tscn" id="5_pynwh"]
 [ext_resource type="PackedScene" uid="uid://5eq3frx5ifc0" path="res://modules/tracks/track.tscn" id="7_i5cau"]
 [ext_resource type="PackedScene" uid="uid://bcth6aokstx71" path="res://modules/ui/ui.tscn" id="9_i5cau"]
+[ext_resource type="PackedScene" uid="uid://bdb1chtyung7f" path="res://modules/vehicle/car_template.tscn" id="9_pynwh"]
 [ext_resource type="Shader" uid="uid://b6mu2acd53ew8" path="res://shaders/sharpness.gdshader" id="10_nnvxs"]
 
 [sub_resource type="Curve" id="Curve_nnvxs"]
@@ -31,11 +31,9 @@ sky_material = SubResource("ProceduralSkyMaterial_nnvxs")
 background_mode = 2
 sky = SubResource("Sky_pynwh")
 tonemap_mode = 2
-ssao_enabled = true
-ssil_enabled = true
-sdfgi_enabled = true
-sdfgi_use_occlusion = true
-glow_enabled = true
+sdfgi_cascades = 2
+sdfgi_min_cell_size = 0.9765625
+sdfgi_energy = 0.025
 fog_density = 0.0001
 volumetric_fog_density = 0.001
 adjustment_enabled = true
@@ -93,9 +91,8 @@ process_mode = 1
 [node name="Track" parent="Game" unique_id=275456329 instance=ExtResource("7_i5cau")]
 unique_name_in_owner = true
 
-[node name="Vehicle" parent="Game" unique_id=689787814 instance=ExtResource("2_vqr18")]
+[node name="Vehicle" parent="Game" unique_id=1402673652 instance=ExtResource("9_pynwh")]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 509, -114, 3191)
 
 [node name="UI" parent="." unique_id=1247360543 instance=ExtResource("9_i5cau")]
 process_mode = 2

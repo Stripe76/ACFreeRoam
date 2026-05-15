@@ -9,7 +9,7 @@ var xrInterface : XRInterface
 
 func _ready() -> void:
 	$GenerateInputMap.GenerateMap( "" )
-
+	
 	if not Engine.is_editor_hint():
 		xrInterface = XRServer.find_interface("OpenXR")	
 		
@@ -23,13 +23,15 @@ func _ready() -> void:
 			
 			XRServer.center_on_hmd(XRServer.RESET_BUT_KEEP_TILT,true)
 	
-	if track and false:
+	if track and true:
 		select_track( "imola","" );
+		#select_car( "ferrari_458_gt2","" );
 		select_car( "abarth500","" );
 		
 		var stall : Node3D = track.get_pit_stall( 1 )
 		if stall and vehicle:
-			vehicle.position = stall.position + Vector3(0,5,0);
+			vehicle.rotation = stall.rotation
+			vehicle.position = stall.position + Vector3(0,0,0);
 	
 	var cancel_event = InputEventAction.new()
 	cancel_event.action = "Pause"
@@ -50,13 +52,14 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func select_track(track_id: String,variant_id: String):
 	if track:
+		print(track_id," ",variant_id)
 		var ac_folder = "/mnt/data/Steam_Linux/steamapps/common/assettocorsa/content/tracks/"
 		track.load_track( ac_folder,track_id,variant_id );
 		
 		var stall : Node3D = track.get_pit_stall( 1 )
 		if stall and vehicle:
-			vehicle.position = stall.position + Vector3(0,2,0);
 			vehicle.rotation = stall.rotation
+			vehicle.position = stall.position + Vector3(0,00,0);
 
 
 func select_car(car_id: String,skin_id: String):

@@ -13,9 +13,16 @@ public partial class GenerateInputMap : Node
 		AddAction( "Left",[Key.A,Key.Left] );
 		AddAction( "Right",[Key.D,Key.Right] );
 
+		AddAction( "CycleCamera",[Key.F1] );
+
 		AddAction( "Accelerator",[JoyAxis.TriggerRight] );
 		AddAction( "Brakes",[JoyAxis.TriggerLeft] );
+		AddAction( "Clutch",[JoyButton.A] );
 		AddActionAxis( "Steering",[JoyAxis.RightX] );
+
+		AddAction( "Handbrake",[JoyButton.B] );
+		AddAction( "ShiftUp",[Key.Pageup,JoyButton.RightShoulder] );
+		AddAction( "ShiftDown",[Key.Pagedown,JoyButton.LeftShoulder] );
 	}
 
 	private static void AddAction( string name,object[] events )
@@ -24,6 +31,7 @@ public partial class GenerateInputMap : Node
 		foreach( object e in events )
 		{
 			if( e is Key k) InputMap.ActionAddEvent( name,new InputEventKey( ) { Keycode = k } );
+			if( e is JoyButton b) InputMap.ActionAddEvent( name,new InputEventJoypadButton( ) { ButtonIndex = b } );
 			if( e is JoyAxis a ) InputMap.ActionAddEvent( name,new InputEventJoypadMotion( ) { Device = -1,Axis = a } );
 		}
 	}

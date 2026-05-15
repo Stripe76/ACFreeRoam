@@ -8,8 +8,14 @@ public partial class ACTrack : Node3D
 	{
 		if( Engine.IsEditorHint( ) )
 		{
-			new ACImportTrack( this ).Load( "/mnt/data/Steam_Linux/steamapps/common/assettocorsa/content/tracks/","monza","" );
-			//new ACImportTrack( this ).Load( "/mnt/data/Steam_Linux/steamapps/common/assettocorsa/content/tracks/","imola","" );
+			//new ACImportTrack( this ).Load( "/mnt/data/Steam_Linux/steamapps/common/assettocorsa/content/tracks/","spa","" );
+			//new ACImportTrack( this ).Load( "/mnt/data/Steam_Linux/steamapps/common/assettocorsa/content/tracks/","ks_red_bull_ring","layout_gp" );
+			//new ACImportTrack( this ).Load( "/mnt/data/Steam_Linux/steamapps/common/assettocorsa/content/tracks/","trento-bondone","" );
+			//new ACImportTrack( this ).Load( "/mnt/data/Steam_Linux/steamapps/common/assettocorsa/content/tracks/","magione","" );
+			//new ACImportTrack( this ).Load( "/mnt/data/Steam_Linux/steamapps/common/assettocorsa/content/tracks/","ks_vallelunga","" );
+			//new ACImportTrack( this ).Load( "/mnt/data/Steam_Linux/steamapps/common/assettocorsa/content/tracks/","mugello","" );
+			//new ACImportTrack( this ).Load( "/mnt/data/Steam_Linux/steamapps/common/assettocorsa/content/tracks/","monza","" );
+			new ACImportTrack( this ).Load( "/mnt/data/Steam_Linux/steamapps/common/assettocorsa/content/tracks/","imola","" );
 			//new ACImportTrack( this ).Load( "/mnt/data/Steam_Linux/steamapps/common/assettocorsa/content/tracks/","la_canyons","freeroam" );
 			//new ACImportTrack( this ).Load( "/mnt/data/Steam_Linux/steamapps/common/assettocorsa/content/tracks/ks_vallelunga/ks_vallelunga.kn5" );
 			//new ACImportTrack( this ).Load( "/mnt/data/Steam_Linux/steamapps/common/assettocorsa/content/tracks/","adc_klutch_kickers_drifters_paradise","" );

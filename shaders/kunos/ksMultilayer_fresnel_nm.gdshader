@@ -87,7 +87,7 @@ void fragment() {
 
 	//float metallic_tex = dot(texture(texture_metallic, base_uv), metallic_texture_channel);
 	//METALLIC = metallic_tex * metallic;
-	SPECULAR = diffuse.a;
+	//SPECULAR = diffuse.a;
 	
 	//vec4 roughness_texture_channel = vec4(1.0, 0.0, 0.0, 0.0);
 	//float roughness_tex = dot(texture(texture_roughness, base_uv), roughness_texture_channel);

@@ -1,7 +1,7 @@
 using Godot;
 using ACTracks.ACImport;
 
-[Tool]
+[Tool, GlobalClass]
 public partial class ACCar : Node3D
 {
 	public override void _Ready()
