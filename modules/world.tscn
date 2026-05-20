@@ -96,4 +96,3 @@ unique_name_in_owner = true
 
 [node name="UI" parent="." unique_id=1247360543 instance=ExtResource("9_i5cau")]
 process_mode = 2
-visible = false

@@ -444,7 +444,7 @@ public class ACImportTrack(Node3D self) : ACImport( self )
 
 public class ACImportCar( Node3D self,ViewportTexture mirror ) : ACImport( self )
 {
-	public override void Load( string acFolder,string carID,string skinID,bool loadTextures = true )
+	public override void Load( string carFolder,string carModelFile,string skinID,bool loadTextures = true )
 	{
 #if DEBUG
 		Debug debug = new Debug( );
@@ -459,7 +459,7 @@ public class ACImportCar( Node3D self,ViewportTexture mirror ) : ACImport( self 
 		
 		try
 		{
-			string modelFile = Path.Combine( acFolder,carID,$"{carID.Replace( "ks_","" )}.kn5" );
+			string modelFile = Path.Combine( carFolder,carModelFile );
 			kn5Model? model = Kn5Import.readKN5( modelFile );
 			
 			if( model != null )
