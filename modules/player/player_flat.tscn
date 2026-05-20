@@ -10,12 +10,16 @@ script = ExtResource("1_e8ca0")
 
 [node name="Cockpit" type="Camera3D" parent="." unique_id=853279646]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0)
+fov = 70.0
+far = 15000.0
 
 [node name="FollowFar" type="Camera3D" parent="." unique_id=1368648244]
 transform = Transform3D(-1, 0, -8.7422784e-08, -1.6615145e-08, 0.98177344, 0.1900551, 8.582936e-08, 0.1900551, -0.98177344, 0, 3.2423687, -5.8577113)
+far = 15000.0
 
 [node name="FollowNear" type="Camera3D" parent="." unique_id=1429926184]
-transform = Transform3D(-1, 0, -8.7422784e-08, -1.6615145e-08, 0.98177344, 0.1900551, 8.582936e-08, 0.1900551, -0.98177344, 0, 1.4778434, -3.8302603)
+transform = Transform3D(-1, 1.7763568e-15, -8.7422784e-08, -2.6215766e-08, 0.953979, 0.2998734, 8.33995e-08, 0.2998734, -0.953979, 0, 1.8518754, -3.436708)
+far = 15000.0
 
 [node name="LeftSide" type="Camera3D" parent="." unique_id=1597638058]
 transform = Transform3D(-4.371139e-08, -0.19080901, 0.9816272, 0, 0.9816272, 0.19080901, -1, 8.3405265e-09, -4.290829e-08, 3.5866833, 0.6832963, 0)

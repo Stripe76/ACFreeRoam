@@ -1,6 +1,12 @@
 @abstract class_name Vehicle extends RigidBody3D
 
 @onready var inputs : Inputs = %Inputs
+@onready var mirror_viewport := $Mirror
+@onready var mirror_camera := $Mirror/CameraOrigin
+
+var reset_request := false
+var reset_position : Vector3
+var reset_rotation : Vector3
 
 var ac_car : Node3D
 var player : Node3D
@@ -25,6 +31,14 @@ func _ready() -> void:
 func _process(_delta: float) -> void:
 	if steering_wheel:
 		steering_wheel.rotation.z = -inputs.steering*PI
+	mirror_camera.position = position
+	mirror_camera.rotation = rotation
+
+
+func reset(pos: Vector3,rot: Vector3):
+	reset_request = true;
+	reset_position = pos;
+	reset_rotation = rot;
 
 
 func load_car(ac_folder: String,car: String,skin: String):
@@ -39,7 +53,8 @@ func load_car(ac_folder: String,car: String,skin: String):
 	
 	ac_car = load("res://modules/cars/ACCar.tscn").instantiate()
 	ac_car.name = "ACCar"
-	ac_car.LoadCar( ac_folder,car,skin )
+	ac_car.LoadCar(ac_folder,car,skin)
+	ac_car.SetMirrorViewport(mirror_viewport)
 	ac_car.position = pos
 	add_child(ac_car)
 	ac_car.owner = self
@@ -92,7 +107,7 @@ func reparent_wheel(spin: Node3D,fixed: Node3D,mesh_name: String,_wheel: String)
 		var mesh : Node3D = get_node_or_null(mesh_name)
 		if mesh:
 			for n in mesh.get_children():
-				if n.name.begins_with("WHEEL"):
+				if n.name.begins_with("WHEEL") or n.name.begins_with("DISC"):
 					n.reparent(spin)
 				else:
 					n.reparent(fixed)

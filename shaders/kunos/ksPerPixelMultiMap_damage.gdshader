@@ -2,14 +2,36 @@ shader_type spatial;
 render_mode blend_mix, depth_draw_opaque, cull_back, diffuse_burley;
 
 uniform vec4 albedo : source_color = vec4(1,1,1,1);
+
+uniform float ksAmbient = 1.0;
+uniform float ksDiffuse = 1.0;
+uniform float ksSpecular = 1.0;
+uniform float ksSpecularEXP = 1.0;
+uniform float ksEmissive = 1.0;
+uniform float ksAlphaRef = 1.0;
+uniform float fresnelC = 0.0; 
+uniform float fresnelEXP = 0.0; 
+uniform float isAdditive = 0.0; 
+uniform float fresnelMaxLevel = 0.0; 
+uniform float nmObjectSpace = 0.0; 
+uniform float useDetail = 0.0; 
+uniform float detailUVMultiplier = 0.0; 
+uniform float shadowBiasMult = 0.0; 
+uniform float damage = 0.0; 
+uniform float boh = 0.0;
+
 uniform sampler2D txDiffuse : source_color, filter_linear_mipmap, repeat_enable;
+uniform sampler2D txNormal : hint_normal, filter_linear_mipmap, repeat_enable;
+uniform sampler2D txMaps : filter_linear_mipmap, repeat_enable;
+uniform sampler2D txDetail : filter_linear_mipmap, repeat_enable;
+uniform sampler2D txDamage : hint_normal, repeat_enable;
 
 void fragment() {
 	vec2 base_uv = UV;
 
 	vec4 albedo_tex = texture(txDiffuse, base_uv);
 	ALBEDO = albedo.rgb * albedo_tex.rgb;
-	//ALBEDO = albedo_tex.rgb;
+	//ALBEDO = vec3(1.0,0.0,0.0);
 
 	//float metallic_tex = dot(texture(texture_metallic, base_uv), metallic_texture_channel);
 	//METALLIC = metallic_tex * metallic;

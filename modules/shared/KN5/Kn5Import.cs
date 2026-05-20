@@ -46,6 +46,11 @@ namespace ACTracks.KN5
     public int type = 1;
     public string name = "Default";
 
+    public byte abyte;
+    public byte bbyte;
+    public byte cbyte;
+    public byte dbyte;
+
     public float[,] tmatrix = new float[4, 4] { { 1.0f, 0.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 0.0f, 1.0f } };
     public float[,] hmatrix = new float[4, 4] { { 1.0f, 0.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 0.0f, 1.0f } };
 
@@ -110,10 +115,23 @@ namespace ACTracks.KN5
             newMaterial.name = ReadStr( binStream,binStream.ReadInt32( ) );
             newMaterial.shader = ReadStr( binStream,binStream.ReadInt32( ) );
             
-            short ashort = binStream.ReadInt16();
-            if( newModel.version > 4 )
-            { int azero = binStream.ReadInt32(); }
+            byte alphaBlend = binStream.ReadByte();
+            byte alphaTest = binStream.ReadByte();
+            if( alphaBlend > 0 && !newMaterial.shader.EndsWith( "alpha",StringComparison.InvariantCultureIgnoreCase ) 
+                               && !newMaterial.shader.EndsWith( "AT",StringComparison.InvariantCultureIgnoreCase )
+                               && !newMaterial.shader.EndsWith( "AT_NM",StringComparison.InvariantCultureIgnoreCase ) )
+              newMaterial.shader = newMaterial.shader + "AB";
+            if( alphaTest > 0 && !newMaterial.shader.EndsWith( "AT",StringComparison.InvariantCultureIgnoreCase )
+                              && !newMaterial.shader.EndsWith( "AT_NM",StringComparison.InvariantCultureIgnoreCase ) )
+              newMaterial.shader = newMaterial.shader + "AT";
+            newMaterial.shaderProps += "AlphaBlend = " + alphaBlend + " \n";
+            newMaterial.shaderProps += "AlphaTest = " + alphaTest + " \n";
 
+            if( newModel.version > 4 )
+            {
+              int azero = binStream.ReadInt32();
+              newMaterial.shaderProps += "azero = " + azero + " \n";
+            }
             int propCount = binStream.ReadInt32();
             for( int p = 0; p < propCount; p++ )
             {
@@ -121,19 +139,18 @@ namespace ACTracks.KN5
               float propValue = binStream.ReadSingle( );
 
               newMaterial.parameters.Add( propName,propValue );
-              newMaterial.shaderProps += propName + "_A = " + propValue + "; ";
+              newMaterial.shaderProps += propName + "_A = " + propValue + " \n";
 
-              propValue = binStream.ReadSingle( );
-              if( propValue > 0.0 )
-                newMaterial.parameters.Add( propName+"_B",propValue );
-              newMaterial.shaderProps += propName + "_B = " + propValue + "; ";
-
-              propValue = binStream.ReadSingle( );
-              if( propValue > 0.0 )
-                newMaterial.parameters.Add( propName+"_C",propValue );
-              newMaterial.shaderProps += propName + "_C = " + propValue + "; ";
-
-              binStream.BaseStream.Position += 28;
+              for( int i = 0; i < 9; i++ )
+              {
+                propValue = binStream.ReadSingle( );
+                if( propValue != 0.0 )
+                {
+                  newMaterial.parameters.Add( propName + "_" + (char)('B' + i),propValue );
+                  newMaterial.shaderProps += propName + "_"+ (char)('B' + i) + " = " + propValue + " \n";
+                }
+              }
+              //binStream.BaseStream.Position += 20;
             }
             int textures = binStream.ReadInt32();
             for( int t = 0; t < textures; t++ )
@@ -143,7 +160,8 @@ namespace ACTracks.KN5
               string texName = ReadStr(binStream, binStream.ReadInt32());
 
               newMaterial.textures.Add( sampleName,texName );
-              newMaterial.shaderProps += sampleName + " = " + texName + ";";
+              newMaterial.shaderProps += "sampleSlot = " + sampleSlot + " \n";
+              newMaterial.shaderProps += sampleName + " = " + texName + " \n";
             }
             newModel.materials.Add( newMaterial );
           }
@@ -201,7 +219,7 @@ namespace ACTracks.KN5
       long children = modelStream.BaseStream.Position;
 
       int childrenCount = modelStream.ReadInt32();
-      byte abyte = modelStream.ReadByte();
+      newNode.abyte = modelStream.ReadByte();
 
       switch( newNode.type )
       {
@@ -235,9 +253,9 @@ namespace ACTracks.KN5
         #region mesh node
         case 2: //mesh
         {
-          byte bbyte = modelStream.ReadByte();
-          byte cbyte = modelStream.ReadByte();
-          byte dbyte = modelStream.ReadByte();
+          newNode.bbyte = modelStream.ReadByte();
+          newNode.cbyte = modelStream.ReadByte();
+          newNode.dbyte = modelStream.ReadByte();
 
           newNode.vertexCount = modelStream.ReadInt32( );
           newNode.position = new Vector3[newNode.vertexCount];
@@ -252,14 +270,12 @@ namespace ACTracks.KN5
 
             modelStream.BaseStream.Position += 12; //tangents
           }
-
           int indexCount = modelStream.ReadInt32();
           newNode.indices = new ushort[indexCount];
           for( int i = 0; i < indexCount; i++ )
           {
             newNode.indices[i] = modelStream.ReadUInt16( );
           }
-
           newNode.materialID = modelStream.ReadInt32( );
           modelStream.BaseStream.Position += 29;
 
@@ -269,9 +285,9 @@ namespace ACTracks.KN5
         #region animated mesh
         case 3: //animated mesh
         {
-          byte bbyte = modelStream.ReadByte();
-          byte cbyte = modelStream.ReadByte();
-          byte dbyte = modelStream.ReadByte();
+          newNode.bbyte = modelStream.ReadByte();
+          newNode.cbyte = modelStream.ReadByte();
+          newNode.dbyte = modelStream.ReadByte();
 
           int boneCount = modelStream.ReadInt32();
           for( int b = 0; b < boneCount; b++ )
@@ -279,7 +295,6 @@ namespace ACTracks.KN5
             string boneName = ReadStr(modelStream, modelStream.ReadInt32());
             modelStream.BaseStream.Position += 64; //transformation matrix
           }
-
           newNode.vertexCount = modelStream.ReadInt32( );
           newNode.position = new Vector3[newNode.vertexCount];
           newNode.normal = new Vector3[newNode.vertexCount];

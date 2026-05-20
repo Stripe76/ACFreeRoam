@@ -141,7 +141,7 @@ func _ready():
 #	XSR_wheels(SR_wheels)
 	if Engine.is_editor_hint() and true:
 		var ac_folder = "/mnt/data/Steam_Linux/steamapps/common/assettocorsa/content/cars/"
-		load_car( ac_folder,"abarth500","" );
+		load_car(ac_folder,"abarth500","");
 
 
 func predict_velocity_at_position(vp: Vector3) -> Vector3:
@@ -499,6 +499,14 @@ func controls(d_scale):
 
 
 func _integrate_forces(state: PhysicsDirectBodyState3D):
+	if reset_request:
+		linear_velocity = Vector3.ZERO
+		angular_velocity = Vector3.ZERO
+		position = reset_position
+		rotation = reset_rotation
+		reset_request = false
+		return
+	
 	PSDB = state
 
 	var delta: float = state.step

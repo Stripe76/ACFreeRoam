@@ -10,7 +10,7 @@ uniform sampler2D txDetailR : source_color, filter_linear_mipmap_anisotropic, re
 uniform sampler2D txDetailG : source_color, filter_linear_mipmap_anisotropic, repeat_enable;
 uniform sampler2D txDetailB : source_color, filter_linear_mipmap_anisotropic, repeat_enable;
 uniform sampler2D txDetailA : source_color, filter_linear_mipmap_anisotropic, repeat_enable;
-uniform sampler2D txDetailNM : source_color, filter_linear_mipmap_anisotropic, repeat_enable;
+uniform sampler2D txDetailNM : hint_normal, filter_linear_mipmap_anisotropic, repeat_enable;
 
 uniform float ksAmbient = 1.0;
 uniform float ksDiffuse = 1.0;

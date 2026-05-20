@@ -12,8 +12,11 @@ public partial class GenerateInputMap : Node
 		AddAction( "Down",[Key.S,Key.Down] );
 		AddAction( "Left",[Key.A,Key.Left] );
 		AddAction( "Right",[Key.D,Key.Right] );
-
+		
 		AddAction( "CycleCamera",[Key.F1] );
+		AddAction( "NextPitStall",[Key.F5] );
+		AddAction( "PrevPitStall",[Key.F6] );
+		AddAction( "ResetVehicle",[Key.F7] );
 
 		AddAction( "Accelerator",[JoyAxis.TriggerRight] );
 		AddAction( "Brakes",[JoyAxis.TriggerLeft] );
