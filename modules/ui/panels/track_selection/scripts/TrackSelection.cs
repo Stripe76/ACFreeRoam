@@ -23,6 +23,5 @@ public partial class TrackSelection : ItemSelection
 				track.Items.Add( newTrack.VariantID,new ItemData( newTrack.VariantID,newTrack.VariantName ) );
 			}
 		}
-
 	}
 }

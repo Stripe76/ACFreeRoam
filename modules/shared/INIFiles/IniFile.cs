@@ -9,31 +9,38 @@ namespace Framework.IniFiles
 {
   public class IniFile
   {
+    readonly string file;
+    
     Dictionary<string, Dictionary<string, string>> ini = new Dictionary<string, Dictionary<string, string>>(StringComparer.InvariantCultureIgnoreCase);
-    string file;
 
     /// <summary>
     /// Initialize an INI file
     /// Load it if it exists
     /// </summary>
     /// <param name="file">Full path where the INI file has to be read from or written to</param>
-    public IniFile( string file )
+    /// <param name="isContent">If true the file param will be used as the actual file content</param>
+    public IniFile( string file,bool isContent = false )
     {
       this.file = file;
+      
+      if( isContent )
+      {
+        Load( file );
+      }
+      else
+      {
+        if( !File.Exists( file ) )
+          return;
 
-      if( !File.Exists( file ) )
-        return;
-
-      Load( );
+        Load( File.ReadAllText( file ) );
+      }
     }
 
     /// <summary>
     /// Load the INI file content
     /// </summary>
-    public void Load( )
+    public void Load( string txt )
     {
-      var txt = File.ReadAllText(file);
-
       Dictionary<string, string> currentSection = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
 
       ini[""] = currentSection;

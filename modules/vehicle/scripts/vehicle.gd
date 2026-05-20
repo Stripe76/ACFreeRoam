@@ -59,6 +59,13 @@ func load_car(ac_folder: String,car: String,skin: String):
 	add_child(ac_car)
 	ac_car.owner = self
 	
+	var collider : Node3D = ac_car.GetCollider( );
+	if collider:
+		for n in get_children():
+			if n is CollisionShape3D:
+				n.queue_free()
+		collider.reparent(self)
+	
 	steering_wheel = get_node_or_null("ACCar/Dynamics/Steerings/HighRes")
 	if steering_wheel:
 		if player:
@@ -67,10 +74,10 @@ func load_car(ac_folder: String,car: String,skin: String):
 			#player.position = pos + steering_wheel.position + Vector3( 0,0.3,-0.3 )
 		steering_wheel = steering_wheel.get_node("STEER_HR")
 	
-	set_node_position(fl_wheel,"ACCar/Dynamics/Wheels/LeftFront")
-	set_node_position(fr_wheel,"ACCar/Dynamics/Wheels/RightFront")
-	set_node_position(rl_wheel,"ACCar/Dynamics/Wheels/LeftRear")
-	set_node_position(rr_wheel,"ACCar/Dynamics/Wheels/RightRear")
+	set_node_position(fl_wheel,"ACCar/Dynamics/Wheels/LeftFront",Vector3(0,0.20,0))
+	set_node_position(fr_wheel,"ACCar/Dynamics/Wheels/RightFront",Vector3(0,0.20,0))
+	set_node_position(rl_wheel,"ACCar/Dynamics/Wheels/LeftRear",Vector3(0,0.20,0))
+	set_node_position(rr_wheel,"ACCar/Dynamics/Wheels/RightRear",Vector3(0,0.20,0))
 	
 	hide_mesh("ACCar/Dynamics/Wheels/LeftFront/WHEEL_LF/RIM_BLUR_LF")
 	hide_mesh("ACCar/Dynamics/Wheels/RightFront/WHEEL_RF/RIM_BLUR_RF")
@@ -88,11 +95,11 @@ func load_car(ac_folder: String,car: String,skin: String):
 	#ac_car.position = ac_car.position + Vector3(0,-0.25,0)
 
 
-func set_node_position(node: Node3D,mesh_name: String):
+func set_node_position(node: Node3D,mesh_name: String,offset: Vector3):
 	if node:
 		var mesh : Node3D = get_node_or_null(mesh_name)
 		if mesh:
-			node.position = mesh.position
+			node.position = mesh.position + offset
 
 
 func reparent_wheel(spin: Node3D,fixed: Node3D,mesh_name: String,_wheel: String):
@@ -106,11 +113,13 @@ func reparent_wheel(spin: Node3D,fixed: Node3D,mesh_name: String,_wheel: String)
 		
 		var mesh : Node3D = get_node_or_null(mesh_name)
 		if mesh:
-			for n in mesh.get_children():
+			for n : Node3D in mesh.get_children():
 				if n.name.begins_with("WHEEL") or n.name.begins_with("DISC"):
 					n.reparent(spin)
 				else:
 					n.reparent(fixed)
+				n.rotation = Vector3.ZERO
+				n.position = Vector3.ZERO
 
 
 func reparent_mesh(node: Node3D,mesh_name: String):

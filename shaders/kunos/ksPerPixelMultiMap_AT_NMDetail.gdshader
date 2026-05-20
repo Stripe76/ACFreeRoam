@@ -1,14 +1,13 @@
 shader_type spatial;
 render_mode blend_mix, depth_draw_opaque, cull_back, diffuse_burley;
 
-uniform vec4 albedo : source_color = vec4(1,1,1,1);
 uniform sampler2D txDiffuse : source_color, filter_linear_mipmap, repeat_enable;
 
 void fragment() {
 	vec2 base_uv = UV;
 
-	vec4 albedo_tex = texture(txDiffuse, base_uv);
-	ALBEDO = albedo.rgb * albedo_tex.rgb;
+	vec4 diffuse = texture(txDiffuse, base_uv);
+	ALBEDO = diffuse.rgb;
 	//ALBEDO = albedo_tex.rgb;
 
 	//float metallic_tex = dot(texture(texture_metallic, base_uv), metallic_texture_channel);
@@ -22,11 +21,8 @@ void fragment() {
 	//NORMAL_MAP = texture(texture_normal, base_uv).rgb;
 	//NORMAL_MAP_DEPTH = normal_scale;
 	
-	if( albedo_tex.a >= 1.0)
-		ALPHA *= albedo.a * albedo_tex.a;
-	else
-		ALPHA = 0.0;
-	//ALPHA_SCISSOR_THRESHOLD = 0.1;
+	ALPHA = diffuse.a;
+	ALPHA_SCISSOR_THRESHOLD = 0.1;
 }
 
 //void light() {

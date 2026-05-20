@@ -1,9 +1,14 @@
 using Godot;
-using System;
-using System.Collections.Generic;
 
 public partial class GenerateInputMap : Node
 {
+	public override void _Ready( )
+	{
+		GenerateMap( "" );
+		
+		QueueFree(  );
+	}
+	
 	public static void GenerateMap( string iniFile )
 	{
 		AddAction( "Pause",[Key.Escape] );
