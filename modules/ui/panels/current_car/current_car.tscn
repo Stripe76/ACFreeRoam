@@ -1,0 +1,20 @@
+[gd_scene format=3 uid="uid://df2d3wgk2obfk"]
+
+[ext_resource type="Script" uid="uid://yhbpmx7pqrru" path="res://modules/ui/panels/current_car/current_car.gd" id="1_i3ns0"]
+
+[node name="CurrentCar" type="Panel" unique_id=680348647]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_i3ns0")
+
+[node name="Title" type="Label" parent="." unique_id=2001918115]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 0.25775
+anchor_bottom = 0.06466667
+offset_right = 0.063999176
+offset_bottom = 0.19999886
+metadata/_edit_use_anchors_ = true

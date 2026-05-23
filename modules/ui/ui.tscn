@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://bsjx8hx104yfr" path="res://modules/ui/ui.gd" id="1_xm1fi"]
 [ext_resource type="PackedScene" uid="uid://pf3u8piljgti" path="res://modules/ui/panels/track_and_cars.tscn" id="2_kjuuh"]
+[ext_resource type="PackedScene" uid="uid://df2d3wgk2obfk" path="res://modules/ui/panels/current_car/current_car.tscn" id="4_4qkns"]
 [ext_resource type="PackedScene" uid="uid://c42o4mtdny2nu" path="res://modules/ui/panels/controls.tscn" id="4_dy1f2"]
 
 [node name="UI" type="Control" unique_id=1046789712 groups=["UI"]]
@@ -32,3 +33,8 @@ metadata/_tab_name = "Tracks and cars"
 visible = false
 layout_mode = 2
 metadata/_tab_index = 1
+
+[node name="CurrentCar" parent="MainPanel" unique_id=953894525 groups=["UI"] instance=ExtResource("4_4qkns")]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 2

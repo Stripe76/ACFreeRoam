@@ -20,20 +20,31 @@ shader = ExtResource("10_nnvxs")
 shader_parameter/blur_sharp = 1.0000000894072
 shader_parameter/pixel = 1.0
 
-[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_nnvxs"]
-sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
-ground_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
+[sub_resource type="PhysicalSkyMaterial" id="PhysicalSkyMaterial_nnvxs"]
+turbidity = 5.35
+ground_color = Color(0.18351838, 0.29191244, 0.09129835, 1)
+energy_multiplier = 2.5
 
 [sub_resource type="Sky" id="Sky_pynwh"]
-sky_material = SubResource("ProceduralSkyMaterial_nnvxs")
+sky_material = SubResource("PhysicalSkyMaterial_nnvxs")
+process_mode = 1
 
 [sub_resource type="Environment" id="Environment_svnph"]
 background_mode = 2
 sky = SubResource("Sky_pynwh")
-tonemap_mode = 2
+ambient_light_color = Color(0.23346338, 0.42414272, 0.3368298, 1)
+ambient_light_sky_contribution = 0.8
+tonemap_mode = 4
+tonemap_exposure = 2.2
+tonemap_agx_contrast = 1.1
+ssr_enabled = true
+ssao_enabled = true
+ssil_enabled = true
+sdfgi_enabled = true
+sdfgi_use_occlusion = true
 sdfgi_cascades = 2
-sdfgi_min_cell_size = 0.9765625
-sdfgi_energy = 0.1
+sdfgi_min_cell_size = 1.953125
+sdfgi_energy = 0.5
 fog_density = 0.0001
 volumetric_fog_density = 0.001
 adjustment_enabled = true
@@ -81,6 +92,7 @@ metadata/_edit_use_anchors_ = true
 [node name="Sun" type="DirectionalLight3D" parent="Environment" unique_id=1813076390]
 transform = Transform3D(-0.8660254, -0.43301278, 0.25, 0, 0.49999997, 0.86602545, -0.50000006, 0.75, -0.43301266, 0, 0, 0)
 shadow_enabled = true
+directional_shadow_max_distance = 750.0
 
 [node name="Environment" type="WorldEnvironment" parent="Environment" unique_id=1633626852]
 environment = SubResource("Environment_svnph")

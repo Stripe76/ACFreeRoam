@@ -10,7 +10,7 @@ script = ExtResource("1_e8ca0")
 
 [node name="Cockpit" type="Camera3D" parent="." unique_id=853279646]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0)
-fov = 70.0
+fov = 52.0
 far = 15000.0
 
 [node name="FollowFar" type="Camera3D" parent="." unique_id=1368648244]

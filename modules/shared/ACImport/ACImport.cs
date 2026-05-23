@@ -473,7 +473,7 @@ public class ACImportCar( Node3D self,ViewportTexture mirror ) : ACImport( self 
 		}
 		catch( Exception e )
 		{
-			GD.Print( e );
+			GD.PushError( e );
 			throw;
 		}
 	}
