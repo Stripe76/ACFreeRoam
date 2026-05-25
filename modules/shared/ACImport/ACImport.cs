@@ -185,6 +185,7 @@ public abstract class ACImport(Node3D self)
 			case "ksPerPixelReflection":
 			case "ksPerPixelReflectionAB":
 			case "ksPerPixelMultiMap_NMDetail":
+			case "ksPerPixelMultiMap_AT_NMDetail":
 			case "ksPerPixelMultiMap":
 			case "ksPerPixelMultiMap_AT":
 			case "ksPerPixelMultiMap_damage":
@@ -212,15 +213,15 @@ public abstract class ACImport(Node3D self)
 		return GD.Load<Shader>( "res://shaders/base.gdshader" );
 	}
 	
-	protected void CreateMeshes( kn5Model model,List<Material> materials,Node3D physics,Node3D visual,Node3D dynamics,Node3D markers,bool recenterMeshes )
+	protected void CreateMeshes( kn5Model model,List<Material> materials,Node3D physics,Node3D visual,Node3D dynamics,Node3D markers,bool isCollider,bool recenterMeshes )
 	{
 		List<Node3D> nodes = [];
 		foreach( kn5Node ksNode in model.nodes )
 		{
 			int materialID = ksNode.materialID;
 
-			bool isPhysics = IsPhysicsNode( ksNode );
-			bool isVisual = materialID >= 0 && materialID < materials.Count;
+			bool isPhysics = IsPhysicsNode( ksNode ) || isCollider;
+			bool isVisual = materialID >= 0 && materialID < materials.Count && !isCollider;
 
 			if( isPhysics && isVisual &&
 			    (ksNode.name.Contains( "WALL" ) ||
@@ -293,10 +294,11 @@ public abstract class ACImport(Node3D self)
 					{
 						Name = ksNode.name + $"_({ksNode.abyte},{ksNode.bbyte},{ksNode.cbyte},{ksNode.dbyte})",
 						Mesh = CreateSurface( mesh,new ArrayMesh( ) ),
-						Position = center,
-						//Position = center + ksNode.translation,
-						//Rotation = ksNode.rotation,
+						//Position = center,
+						Position = center + ksNode.translation,
+						Rotation = ksNode.rotation,
 						//Scale = ksNode.scaling
+						//Layers = (recenterMeshes ? (uint)0b00000_00000_00000_00001 : (uint)0b00000_00000_00001_00001),
 					};
 					//meshInstance.Set( "resource_local_to_scene",true );
 					
@@ -318,7 +320,10 @@ public abstract class ACImport(Node3D self)
 						CollisionShape3D collision = new CollisionShape3D( );
 						collision.Name = ksNode.name + $"_({ksNode.abyte},{ksNode.bbyte},{ksNode.cbyte},{ksNode.dbyte})";
 						collision.Position = center;
-						collision.SetShape( meshInstance.Mesh.CreateTrimeshShape( ) );
+						if( isCollider )
+							collision.SetShape( meshInstance.Mesh.CreateConvexShape( ) );
+						else
+							collision.SetShape( meshInstance.Mesh.CreateTrimeshShape( ) );
 							
 						physics.AddChild( collision );
 						collision.Owner = self;
@@ -401,7 +406,7 @@ public class ACImportTrack(Node3D self) : ACImport( self )
 					{
 						materials = CreateMaterials( model,null,debug );
 					}
-					CreateMeshes( model,materials,physics,visuals,dynamics,markers,true );
+					CreateMeshes( model,materials,physics,visuals,dynamics,markers,false,true );
 				}
 			}
 		}
@@ -452,23 +457,28 @@ public class ACImportCar( Node3D self,ViewportTexture mirror ) : ACImport( self 
 		debug.Name = "Debug";
 		debug.Owner = self;
 #endif
-		var physics = AddNode<StaticBody3D>( "Physics" );
+		var physics = AddNode<Node3D>( "Physics" );
 		var visuals = AddNode<Node3D>( "Visuals" );
 		var dynamics = AddNode<Node3D>( "Dynamics" );
 		var markers = AddNode<Node3D>( "Markers" );
 		
+		List<Material> materials = [];
 		try
 		{
 			string modelFile = Path.Combine( carFolder,carModelFile );
 			kn5Model? model = Kn5Import.readKN5( modelFile );
-			
 			if( model != null )
 			{
-				List<Material> materials = [];
 				if( loadTextures )
 					materials = CreateMaterials( model,mirror,debug );
 
-				CreateMeshes( model,materials,physics,visuals,dynamics,markers,false );
+				CreateMeshes( model,materials,physics,visuals,dynamics,markers,false,false );
+			}
+			string colliderFile = Path.Combine( carFolder,"collider.kn5" );
+			kn5Model? collider = Kn5Import.readKN5( colliderFile );
+			if( collider != null )
+			{
+				CreateMeshes( collider,materials,physics,visuals,dynamics,markers,true,false );
 			}
 		}
 		catch( Exception e )
@@ -481,6 +491,14 @@ public class ACImportCar( Node3D self,ViewportTexture mirror ) : ACImport( self 
 	protected override Node3D GetParent( int parentID,string name,Node3D node,Node3D physics,Node3D visual,Node3D dynamics,Node3D placeholders,List<Node3D> nodes )
 	{
 		Node3D parent = base.GetParent( parentID,name,node,physics,visual,dynamics,placeholders,nodes );
+		if( parentID > 0 && !name.StartsWith( "STEER_" ) && !name.StartsWith( "DAMAGE_" ) )
+		{
+			return parent;
+		}
+		else
+		{
+			node.Position += parent.Position;
+		}
 		if( name.EndsWith( "_LIGHT" ) )
 		{
 			parent = dynamics;

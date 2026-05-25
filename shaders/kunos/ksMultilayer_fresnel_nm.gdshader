@@ -20,7 +20,7 @@ uniform sampler2D txDetailR : source_color, filter_linear_mipmap_anisotropic, re
 uniform sampler2D txDetailG : source_color, filter_linear_mipmap_anisotropic, repeat_enable;
 uniform sampler2D txDetailB : source_color, filter_linear_mipmap_anisotropic, repeat_enable;
 uniform sampler2D txDetailA : source_color, filter_linear_mipmap_anisotropic, repeat_enable;
-uniform sampler2D txDetailNM : source_color, filter_linear_mipmap_anisotropic, repeat_enable;
+uniform sampler2D txDetailNM : hint_normal, filter_linear_mipmap_anisotropic, repeat_enable;
 
 varying vec3 uv1_triplanar_pos;
 
@@ -85,7 +85,7 @@ void fragment() {
 
 	//float metallic_tex = dot(texture(texture_metallic, base_uv), metallic_texture_channel);
 	//METALLIC = metallic_tex * metallic;
-	SPECULAR = .5;
+	SPECULAR = .25;
 	
 	//vec4 roughness_texture_channel = vec4(1.0, 0.0, 0.0, 0.0);
 	//float roughness_tex = dot(texture(texture_roughness, base_uv), roughness_texture_channel);
@@ -93,12 +93,13 @@ void fragment() {
 	
 	vec4 tx = triplanar_texture(txDetailNM,uv1_triplanar_pos,1.0);
 	NORMAL_MAP = tx.rgb;
-	NORMAL_MAP_DEPTH = .5;
+	NORMAL_MAP_DEPTH = .1;
 	
 	//ALPHA = diffuse.a;
 	//ALPHA_SCISSOR_THRESHOLD = 0.1;
 }
 
+/*
 void light() {
 	// Called for every pixel for every light affecting the material.
 	// Uncomment to replace the default light processing function with this one.
@@ -123,3 +124,4 @@ void light() {
 	
 	//SPECULAR_LIGHT += fresnel * LIGHT_COLOR * ATTENUATION * 0.005;
 }
+*/

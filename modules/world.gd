@@ -9,7 +9,7 @@ var xrInterface : XRInterface
 var current_pit_stall := 1
 
 func _ready() -> void:
-	$GenerateInputMap.GenerateMap( "" )
+	#$GenerateInputMap.GenerateMap( "" )
 	
 	if not Engine.is_editor_hint():
 		xrInterface = XRServer.find_interface("OpenXR")	

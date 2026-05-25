@@ -17,11 +17,11 @@ public partial class ACCar : Node3D
 		//MirrorTexture.ViewportPath = GetNode( "SubViewport" ).GetPath( );
 		
 		if( Engine.IsEditorHint( ) )
-		{                          
-			new ACImportCar( this,MirrorTexture ).Load( "/mnt/data/Steam_Linux/steamapps/common/assettocorsa/content/cars/","abarth500","" );
-			//new ACImportCar( this ).Load( "/mnt/data/Steam_Linux/steamapps/common/assettocorsa/content/cars/","ferrari_458","" );
-			//new ACImportCar( this ).Load( "/mnt/data/Steam_Linux/steamapps/common/assettocorsa/content/cars/","ks_nissan_gtr","" );
-			//new ACImportCar( this ).Load( "/mnt/data/Steam_Linux/steamapps/common/assettocorsa/content/cars/","ks_ford_gt40","" );
+		{
+			LoadCar( "/mnt/data/Steam_Linux/steamapps/common/assettocorsa/content/cars/","abarth500","" );
+			//LoadCar( "/mnt/data/Steam_Linux/steamapps/common/assettocorsa/content/cars/","ks_ford_gt40","" );
+			//LoadCar( "/mnt/data/Steam_Linux/steamapps/common/assettocorsa/content/cars/","ks_nissan_gtr","" );
+			//LoadCar( "/mnt/data/Steam_Linux/steamapps/common/assettocorsa/content/cars/","ferrari_458","" );
 		}
 	}
 
@@ -40,6 +40,13 @@ public partial class ACCar : Node3D
 		new ACImportCar( this,MirrorTexture ).Load( carFolder,file,skin );
 	}
 
+	public Node3D? GetCollider( )
+	{
+		var physics = FindChild( "Physics" );
+		if( physics is not null && physics.GetChildCount( ) > 0 )
+			return (Node3D)physics.GetChild( 0 );
+		return null;
+	}
 	public void SetMirrorViewport( SubViewport viewport )
 	{
 		MirrorTexture.ViewportPath = viewport.GetPath( );

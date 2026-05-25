@@ -14,6 +14,7 @@
 
 [sub_resource type="PhysicsMaterial" id="33"]
 bounce = 0.14
+absorbent = true
 
 [sub_resource type="Resource" id="Resource_8caga"]
 script = ExtResource("2_xco5r")
@@ -110,9 +111,6 @@ _surfaces = [{
 "vertex_count": 75,
 "vertex_data": PackedByteArray("4Dq+PYzTJz/1qgw+SmRCPk78Jz/0W40+SmRCPozTJz/1qgw+4Dq+PSIH2j7m/KU+SmRCPnpI6D6UzTg+SmRCPiIH2j7m/KU+SmRCPogO8T4AAACAyLxfPnpI6D6UzTg+SmRCPnpI6D6UzTg+4Dq+PXpI6D6UzTg+SmRCPogO8T4AAACA4Dq+PRlAPT9raA+9SmRCPhlAPT+1Cg89SmRCPhlAPT9raA+94Dq+PYzTJz+TLw2+SmRCPozTJz+TLw2+4Dq+PRdNED/O0NY+SmRCPqph5z5D+O8+SmRCPhdNED/O0NY+4Dq+PXpI6D6UzTi+SmRCPiIH2j7m/KW+SmRCPnpI6D6UzTi+4Dq+Paph5z5D+O++SmRCPhdNED8M2te+SmRCPqph5z5D+O++4Dq+PU78Jz/0W40+4Dq+PSIH2j7m/KW+4Dq+PRlAPT+1Cg894Dq+Paph5z5D+O8+4Dq+PRdNED8M2te+SmRCPk78Jz+U4I2+4Dq+PYgO8T4AAACA4Dq+PU78Jz+U4I2+SmRCPiIH2j7m/KU+SmRCPhdNED/O0NY+SmRCPqph5z5D+O8+SmRCPhdNED8M2te+SmRCPiIH2j7m/KW+SmRCPqph5z5D+O++SmRCPhdNED/O0NY+SmRCPozTJz/1qgw+SmRCPk78Jz/0W40+SmRCPozTJz+TLw2+SmRCPhdNED8M2te+SmRCPk78Jz+U4I2+yLxfPnpI6D6UzTg+yLxfPogO8T4AAACAyLxfPozTJz/1qgw+SmRCPiIH2j7m/KU+yLxfPhdNED/O0NY+SmRCPhdNED/O0NY+SmRCPozTJz/1qgw+yLxfPhlAPT+1Cg89SmRCPhlAPT+1Cg89SmRCPhdNED8M2te+yLxfPiIH2j7m/KW+SmRCPiIH2j7m/KW+yLxfPnpI6D6UzTi+SmRCPnpI6D6UzTi+yLxfPogO8T4AAACASmRCPhlAPT9raA+9yLxfPozTJz+TLw2+SmRCPozTJz+TLw2+yLxfPozTJz/1qgw+yLxfPhlAPT9raA+9yLxfPhdNED8M2te+yLxfPiIH2j7m/KU+yLxfPnpI6D6UzTi+yLxfPiIH2j7m/KW+yLxfPhdNED8M2te+yLxfPozTJz+TLw2+yLxfPhlAPT9raA+9yLxfPhlAPT+1Cg89yLxfPhdNED/O0NY+yLxfPiIH2j7m/KU+AACIXgAAEGMAAIhezwABgBwQAYDPAAGAAAABgBwQAYAcEAGAHBABgAAAAYCPIf9/AABbXo8h/39iIf9/YiH/fwAA6ToAAIzTAADpOgAAHpAAANGAAAAekAFTAYB4Rf9/AVMBgAAAEGMAANGAAABbXgAAjNN4Rf9/zBz/fwAAAYDMHP9//38AAP9/AAD/fwAA/38AAP9/AAD/fwAA/38AAP9/AAD/fwAA/38AAP9/AAD/fwAA/38AAP9/AAD/fwAAAAATpQAASSAAAEkgAADIUgAAW14AAFteCmD/f7IkAYCyJAGAAAAekAAAHpAAAAGAjyH/fxYt/38WLf9/AADIUo8h/38KYP9/AAATpf9/AAD/fwAA/38AAP9/AAD/fwAA/38AAP9/AAD/fwAA")
 }]
-
-[sub_resource type="ConvexPolygonShape3D" id="6"]
-points = PackedVector3Array(0.835, 0.744, 1.778, 0.835, 0, 1.778, 0.835, 0.744, -1.966, -0.835, 0.744, 1.778, -0.835, 0, 1.778, 0.835, 0, -1.966, -0.835, 0.744, -1.966, -0.835, 0, -1.966)
 
 [node name="car" type="RigidBody3D" unique_id=401314494]
 mass = 1000.0
@@ -261,10 +259,6 @@ mesh = SubResource("28")
 transform = Transform3D(-0.244, 0, 0, 0, 7.45058e-09, -0.244, 0, 0.244, 7.45058e-09, 0.053, 0, 0)
 mesh = SubResource("30")
 
-[node name="CollisionShape" type="CollisionShape3D" parent="." unique_id=460661876]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.1)
-shape = SubResource("6")
-
 [node name="enon" type="AudioStreamPlayer3D" parent="." unique_id=1306151300]
 stream = ExtResource("6")
 max_db = 0.0
@@ -311,3 +305,23 @@ size = Vector2i(512, 256)
 [node name="Camera3D" type="Camera3D" parent="Mirror/CameraOrigin" unique_id=2079335489]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.72038007, -2.3079548)
 keep_aspect = 0
+
+[node name="HeadLightLeft" type="SpotLight3D" parent="." unique_id=1514103201]
+transform = Transform3D(-1, -2.990035e-08, 8.2150535e-08, 0, 0.9396926, 0.34202012, -8.742278e-08, 0.34202012, -0.9396926, -0.6707469, 0.5, 2.5)
+light_energy = 2000.0
+light_size = 0.1
+shadow_enabled = true
+shadow_bias = 2.0
+spot_range = 150.0
+spot_attenuation = 2.0
+spot_angle = 30.0
+
+[node name="HeadLightRight" type="SpotLight3D" parent="." unique_id=1714644951]
+transform = Transform3D(-1, -2.990035e-08, 8.2150535e-08, 0, 0.9396926, 0.34202012, -8.742278e-08, 0.34202012, -0.9396926, 0.671, 0.5, 2.5)
+light_energy = 2000.0
+light_size = 0.1
+shadow_enabled = true
+shadow_bias = 2.0
+spot_range = 150.0
+spot_attenuation = 2.0
+spot_angle = 30.0

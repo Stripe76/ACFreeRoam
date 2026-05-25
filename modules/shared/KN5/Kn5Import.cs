@@ -119,7 +119,8 @@ namespace ACTracks.KN5
             byte alphaTest = binStream.ReadByte();
             if( alphaBlend > 0 && !newMaterial.shader.EndsWith( "alpha",StringComparison.InvariantCultureIgnoreCase ) 
                                && !newMaterial.shader.EndsWith( "AT",StringComparison.InvariantCultureIgnoreCase )
-                               && !newMaterial.shader.EndsWith( "AT_NM",StringComparison.InvariantCultureIgnoreCase ) )
+                               && !newMaterial.shader.EndsWith( "AT_NM",StringComparison.InvariantCultureIgnoreCase )
+                               && !newMaterial.shader.Contains( "_AT_",StringComparison.InvariantCultureIgnoreCase ) )
               newMaterial.shader = newMaterial.shader + "AB";
             if( alphaTest > 0 && !newMaterial.shader.EndsWith( "AT",StringComparison.InvariantCultureIgnoreCase )
                               && !newMaterial.shader.EndsWith( "AT_NM",StringComparison.InvariantCultureIgnoreCase ) )
