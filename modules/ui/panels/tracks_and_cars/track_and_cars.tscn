@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://pf3u8piljgti"]
 
-[ext_resource type="PackedScene" uid="uid://c82y88v8wanrk" path="res://modules/ui/panels/track_selection/track_selection.tscn" id="1_5rnje"]
-[ext_resource type="PackedScene" uid="uid://i1hfrhp6kona" path="res://modules/ui/panels/car_selection/car_selection.tscn" id="2_lu3sy"]
+[ext_resource type="PackedScene" uid="uid://c82y88v8wanrk" path="res://modules/ui/panels/tracks_and_cars/track_selection/track_selection.tscn" id="1_sfw04"]
+[ext_resource type="PackedScene" uid="uid://i1hfrhp6kona" path="res://modules/ui/panels/tracks_and_cars/car_selection/car_selection.tscn" id="2_upmus"]
 
 [node name="TrackAndCars" type="Panel" unique_id=1347389141]
 anchors_preset = 15
@@ -22,12 +22,12 @@ grow_vertical = 2
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="TrackSelection" parent="HSplitContainer/Tracks" unique_id=511286809 instance=ExtResource("1_5rnje")]
+[node name="TrackSelection" parent="HSplitContainer/Tracks" unique_id=511286809 instance=ExtResource("1_sfw04")]
 layout_mode = 2
 
 [node name="Cars" type="ScrollContainer" parent="HSplitContainer" unique_id=791922806]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="CarSelection" parent="HSplitContainer/Cars" unique_id=123409241 instance=ExtResource("2_lu3sy")]
+[node name="CarSelection" parent="HSplitContainer/Cars" unique_id=123409241 instance=ExtResource("2_upmus")]
 layout_mode = 2

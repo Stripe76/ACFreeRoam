@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://pgnbq6wlvvic"]
 
 [ext_resource type="Script" uid="uid://dp65mari8j1w7" path="res://modules/player/scripts/player_flat.gd" id="1_e8ca0"]
+[ext_resource type="PackedScene" uid="uid://bcth6aokstx71" path="res://modules/ui/ui.tscn" id="2_iutc7"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_e8ca0"]
 size = Vector3(1.8, 1.3, 4.5)
@@ -27,3 +28,6 @@ transform = Transform3D(-4.371139e-08, -0.19080901, 0.9816272, 0, 0.9816272, 0.1
 [node name="PlaceHolder" type="MeshInstance3D" parent="." unique_id=1665489415]
 visible = false
 mesh = SubResource("BoxMesh_e8ca0")
+
+[node name="UI" parent="." unique_id=1046789712 instance=ExtResource("2_iutc7")]
+process_mode = 2

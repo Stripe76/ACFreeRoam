@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://c42o4mtdny2nu"]
 
-[node name="Controls" type="Panel" unique_id=618632824]
+[node name="Control" type="Panel" unique_id=824306681]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0

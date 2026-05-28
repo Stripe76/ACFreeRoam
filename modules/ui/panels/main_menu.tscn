@@ -1,8 +1,18 @@
-[gd_scene load_steps=7 format=3 uid="uid://dyqrnbixbd1ig"]
+[gd_scene format=3 uid="uid://r4vd4ec55rnj"]
 
 [ext_resource type="Script" uid="uid://b0fbgfh5kpkrn" path="res://framework/menus/buttons_menu.gd" id="1_gmtdw"]
-[ext_resource type="Script" uid="uid://csvkqhq7idd0b" path="res://modules/ui/panels/main_menu.gd" id="1_hapee"]
 [ext_resource type="PackedScene" uid="uid://cebajgvqc1hm6" path="res://modules/ui/menus/main.tscn" id="2_hapee"]
+
+[sub_resource type="GDScript" id="GDScript_gmtdw"]
+script/source = "extends Control
+
+func button_state_changed(menu_name: String,state: int):
+	if menu_name == \"Main\":
+		if state == 1:
+			$ExpandCollapse.play_backwards(\"expand\")
+		elif state == 2:
+			$ExpandCollapse.play(\"expand\")
+"
 
 [sub_resource type="Animation" id="Animation_ravvj"]
 length = 0.001
@@ -65,15 +75,15 @@ _data = {
 &"expand": SubResource("Animation_hapee")
 }
 
-[node name="MainMenu" type="Panel" groups=["UI"]]
+[node name="MainMenu" type="Panel" unique_id=1595003921 groups=["UI"]]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1_hapee")
+script = SubResource("GDScript_gmtdw")
 
-[node name="Main" type="Control" parent="." node_paths=PackedStringArray("menu_item")]
+[node name="Main" type="Control" parent="." unique_id=1356851766 node_paths=PackedStringArray("menu_item")]
 clip_contents = true
 anchors_preset = 0
 offset_right = 357.0
@@ -84,10 +94,8 @@ expand_state = 1
 spread_y = 50.0
 opacity = 1.0
 
-[node name="MenuItems" parent="." instance=ExtResource("2_hapee")]
+[node name="MenuItems" parent="." unique_id=2138638144 instance=ExtResource("2_hapee")]
 title = "MenuItems"
 
-[node name="ExpandCollapse" type="AnimationPlayer" parent="."]
-libraries = {
-&"": SubResource("AnimationLibrary_6ug3h")
-}
+[node name="ExpandCollapse" type="AnimationPlayer" parent="." unique_id=1967234825]
+libraries/ = SubResource("AnimationLibrary_6ug3h")

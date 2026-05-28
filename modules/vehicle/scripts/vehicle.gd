@@ -1,5 +1,10 @@
 @abstract class_name Vehicle extends RigidBody3D
 
+@export var player : Node3D:
+	set(value):
+		player = value
+		add_child(player)
+
 @onready var inputs : Inputs = %Inputs
 @onready var mirror_viewport := $Mirror
 @onready var mirror_camera := $Mirror/CameraOrigin
@@ -9,7 +14,6 @@ var reset_position : Vector3
 var reset_rotation : Vector3
 
 var ac_car : Node3D
-var player : Node3D
 
 var steering_wheel : Node3D
 
@@ -21,11 +25,11 @@ var rr_wheel
 var spin_path : String
 var fixed_path : String
 
-func _ready() -> void:
-	player = load("res://modules/player/player_flat.tscn").instantiate()
-	player.name = "PlayerFlat";
+#func _ready() -> void:
+	#player = load("res://modules/player/player_flat.tscn").instantiate()
+	#player.name = "PlayerFlat";
 	
-	add_child(player)
+	#add_child(player)
 
 
 func _process(_delta: float) -> void:
@@ -115,11 +119,11 @@ func reparent_wheel(spin: Node3D,fixed: Node3D,mesh_name: String,_wheel: String)
 		if mesh:
 			for n : Node3D in mesh.get_children():
 				if n.name.begins_with("WHEEL") or n.name.begins_with("DISC"):
-					n.reparent(spin)
+					n.reparent(spin,false)
 				else:
-					n.reparent(fixed)
-				n.rotation = Vector3.ZERO
-				n.position = Vector3.ZERO
+					n.reparent(fixed,false)
+				#n.rotation = Vector3.ZERO
+				#n.position = Vector3.ZERO
 
 
 func reparent_mesh(node: Node3D,mesh_name: String):

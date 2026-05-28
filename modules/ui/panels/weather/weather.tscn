@@ -1,0 +1,69 @@
+[gd_scene format=3 uid="uid://dfsd2e5jlakci"]
+
+[ext_resource type="Script" uid="uid://ddmcxyrn7qrij" path="res://modules/ui/panels/base_panel.gd" id="1_luoqd"]
+
+[node name="Weather" type="Panel" unique_id=949236240]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_luoqd")
+group = "Weather"
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=109420717]
+layout_mode = 0
+offset_right = 1880.0
+offset_bottom = 158.0
+
+[node name="Control1" type="Control" parent="VBoxContainer" unique_id=1567990344]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+
+[node name="TimeOfDay" type="HSlider" parent="VBoxContainer/Control1" unique_id=963588556]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+max_value = 24.0
+step = 0.1
+
+[node name="Control2" type="Control" parent="VBoxContainer" unique_id=1198110505]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+
+[node name="Clouds" type="HSlider" parent="VBoxContainer/Control2" unique_id=203909869]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 0
+offset_right = 1880.0
+offset_bottom = 50.0
+grow_horizontal = 2
+grow_vertical = 2
+max_value = 1.0
+step = 0.01
+
+[node name="Control3" type="Control" parent="VBoxContainer" unique_id=1635940886]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+
+[node name="Fog" type="HSlider" parent="VBoxContainer/Control3" unique_id=596658844]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 0
+offset_right = 1880.0
+offset_bottom = 50.0
+grow_horizontal = 2
+grow_vertical = 2
+max_value = 1.0
+step = 0.0
+
+[connection signal="drag_ended" from="VBoxContainer/Control1/TimeOfDay" to="." method="_on_slider_drag_ended" flags=18]
+[connection signal="drag_started" from="VBoxContainer/Control1/TimeOfDay" to="." method="_on_slider_drag_started" flags=18]
+[connection signal="value_changed" from="VBoxContainer/Control1/TimeOfDay" to="." method="_on_slider_changed" binds= ["time_of_day_changed"]]
+[connection signal="drag_ended" from="VBoxContainer/Control2/Clouds" to="." method="_on_slider_drag_ended" flags=18]
+[connection signal="drag_started" from="VBoxContainer/Control2/Clouds" to="." method="_on_slider_drag_started" flags=18]
+[connection signal="value_changed" from="VBoxContainer/Control2/Clouds" to="." method="_on_slider_changed" binds= ["clouds_changed"]]
+[connection signal="drag_ended" from="VBoxContainer/Control3/Fog" to="." method="_on_slider_drag_ended" flags=18]
+[connection signal="drag_started" from="VBoxContainer/Control3/Fog" to="." method="_on_slider_drag_started" flags=18]
+[connection signal="value_changed" from="VBoxContainer/Control3/Fog" to="." method="_on_slider_changed" binds= ["fog_changed"]]

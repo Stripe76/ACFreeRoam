@@ -1,6 +1,6 @@
-[gd_scene load_steps=5 format=3 uid="uid://bkuktk3qspxc4"]
+[gd_scene format=3 uid="uid://bkuktk3qspxc4"]
 
-[ext_resource type="Script" uid="uid://480qbabyeto3" path="res://modules/ui/panels/car_selection/scripts/CarItem.cs" id="1_g3qa5"]
+[ext_resource type="Script" uid="uid://480qbabyeto3" path="res://modules/ui/panels/tracks_and_cars/car_selection/scripts/CarItem.cs" id="1_g3qa5"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bh3v3"]
 bg_color = Color(0, 0.36913243, 3.85046e-07, 0.49803922)

@@ -1,15 +1,21 @@
 [gd_scene format=3 uid="uid://bcth6aokstx71"]
 
 [ext_resource type="Script" uid="uid://bsjx8hx104yfr" path="res://modules/ui/ui.gd" id="1_xm1fi"]
-[ext_resource type="PackedScene" uid="uid://pf3u8piljgti" path="res://modules/ui/panels/track_and_cars.tscn" id="2_kjuuh"]
+[ext_resource type="PackedScene" uid="uid://pf3u8piljgti" path="res://modules/ui/panels/tracks_and_cars/track_and_cars.tscn" id="2_kjuuh"]
 [ext_resource type="PackedScene" uid="uid://df2d3wgk2obfk" path="res://modules/ui/panels/current_car/current_car.tscn" id="4_4qkns"]
-[ext_resource type="PackedScene" uid="uid://c42o4mtdny2nu" path="res://modules/ui/panels/controls.tscn" id="4_dy1f2"]
+[ext_resource type="PackedScene" uid="uid://c42o4mtdny2nu" path="res://modules/ui/panels/controls/controls.tscn" id="4_dy1f2"]
+[ext_resource type="PackedScene" uid="uid://dfsd2e5jlakci" path="res://modules/ui/panels/weather/weather.tscn" id="5_4qkns"]
 
 [node name="UI" type="Control" unique_id=1046789712 groups=["UI"]]
 layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -960.0
+offset_top = -540.0
+offset_right = 960.0
+offset_bottom = 540.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_xm1fi")
@@ -38,3 +44,18 @@ metadata/_tab_index = 1
 visible = false
 layout_mode = 2
 metadata/_tab_index = 2
+
+[node name="Weather" parent="MainPanel" unique_id=673765914 node_paths=PackedStringArray("preview_panel") instance=ExtResource("5_4qkns")]
+visible = false
+layout_mode = 2
+preview_panel = NodePath("../../PreviewPanel")
+metadata/_tab_index = 3
+
+[node name="PreviewPanel" type="Control" parent="." unique_id=462573300]
+visible = false
+use_parent_material = true
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+grow_horizontal = 2

@@ -1,5 +1,7 @@
 class_name PlayerFlat extends Node3D
 
+@onready var ui := $UI
+
 @onready var _cameras := [
 	$Cockpit,
 	$FollowNear,
@@ -10,7 +12,6 @@ var _current_camera := 0
 
 
 func set_cockpit_position(camera: Vector3):
-	print(set_cockpit_position)
 	$Cockpit.position = camera
 
 

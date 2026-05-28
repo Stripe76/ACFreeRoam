@@ -1,0 +1,124 @@
+[gd_scene format=3 uid="uid://cnxhl0hgvwjmo"]
+
+[ext_resource type="Script" uid="uid://cuo486pdkj2ds" path="res://modules/main.gd" id="1_v23tl"]
+[ext_resource type="PackedScene" uid="uid://c5b1grybbdgua" path="res://modules/inputs/generate_input_map.tscn" id="2_1evfd"]
+[ext_resource type="PackedScene" uid="uid://dbd8xabtetwfa" path="res://modules/inputs/inputs.tscn" id="3_weac3"]
+[ext_resource type="PackedScene" uid="uid://bc10u2q8jik34" path="res://modules/inputs/keyboard.tscn" id="4_ei7ke"]
+[ext_resource type="PackedScene" uid="uid://b5w6y447fpdnq" path="res://modules/inputs/joypad.tscn" id="5_hhjdk"]
+[ext_resource type="Shader" uid="uid://b6mu2acd53ew8" path="res://shaders/sharpness.gdshader" id="6_blons"]
+[ext_resource type="Script" uid="uid://li8y3paq02fm" path="res://modules/environment/environment.gd" id="7_fqlsu"]
+[ext_resource type="Environment" uid="uid://k80viqxnxhaf" path="res://modules/environment/heavy.tres" id="8_5tq5q"]
+[ext_resource type="Script" uid="uid://deo0gxkmk2ahd" path="res://addons/sky_3d/src/Sky3D.gd" id="15_4kp13"]
+[ext_resource type="Script" uid="uid://b4tkplvh7fq40" path="res://addons/sky_3d/src/SkyDome.gd" id="16_5tg8h"]
+[ext_resource type="Script" uid="uid://cjmkcj8hwm7ts" path="res://addons/sky_3d/src/TimeOfDay.gd" id="17_sd5dy"]
+[ext_resource type="PackedScene" uid="uid://5eq3frx5ifc0" path="res://modules/tracks/track.tscn" id="18_sw6up"]
+[ext_resource type="PackedScene" uid="uid://bdb1chtyung7f" path="res://modules/vehicle/car_template.tscn" id="19_cxufb"]
+
+[sub_resource type="Curve" id="Curve_nnvxs"]
+_data = [Vector2(0, 0), 0.0, 1.0, 0, 1, Vector2(1, 1), 1.0, 0.0, 1, 0]
+point_count = 2
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_pynwh"]
+shader = ExtResource("6_blons")
+shader_parameter/blur_sharp = 1.0000000894072
+shader_parameter/pixel = 1.0
+
+[sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_svnph"]
+
+[node name="Main" type="Node3D" unique_id=586556883 groups=["UI"]]
+process_mode = 3
+script = ExtResource("1_v23tl")
+
+[node name="GenerateInputMap" parent="." unique_id=49486460 instance=ExtResource("2_1evfd")]
+
+[node name="Inputs" parent="." unique_id=1649399694 instance=ExtResource("3_weac3")]
+unique_name_in_owner = true
+process_mode = 1
+
+[node name="Keyboard" parent="Inputs" unique_id=894289546 instance=ExtResource("4_ei7ke")]
+accelerator_curve = SubResource("Curve_nnvxs")
+
+[node name="Joypad" parent="Inputs" unique_id=746114494 instance=ExtResource("5_hhjdk")]
+
+[node name="PostProcess" type="Control" parent="." unique_id=926849540]
+process_mode = 1
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Sharpness" type="ColorRect" parent="PostProcess" unique_id=608974445]
+material = SubResource("ShaderMaterial_pynwh")
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.346875
+anchor_top = 0.25833333
+anchor_right = 0.6713542
+anchor_bottom = 0.66851854
+grow_horizontal = 2
+grow_vertical = 2
+metadata/_edit_use_anchors_ = true
+
+[node name="Environment" type="Node3D" parent="." unique_id=1016739295 groups=["Weather"]]
+process_mode = 1
+script = ExtResource("7_fqlsu")
+
+[node name="Sky3D" type="WorldEnvironment" parent="Environment" unique_id=675195593]
+environment = ExtResource("8_5tq5q")
+camera_attributes = SubResource("CameraAttributesPractical_svnph")
+script = ExtResource("15_4kp13")
+editor_time_enabled = false
+game_time_enabled = false
+current_time = 12.251
+minutes_per_day = 5.0
+sun_energy = 2.0
+wind_direction = 2.35619451204804
+metadata/_custom_type_script = "uid://deo0gxkmk2ahd"
+
+[node name="SunLight" type="DirectionalLight3D" parent="Environment/Sky3D" unique_id=907326150]
+transform = Transform3D(0.9959512, 0.0817521, -0.03738803, 0, 0.4159037, 0.9094087, 0.08989589, -0.9057267, 0.41421977, -0.03738803, 0.9094087, 0.41421977)
+light_energy = 2.0
+shadow_enabled = true
+directional_shadow_max_distance = 500.0
+
+[node name="MoonLight" type="DirectionalLight3D" parent="Environment/Sky3D" unique_id=46294763]
+transform = Transform3D(0, -0.3898808, 0.92086536, -0.6746364, -0.6797369, -0.2877906, 0.7381502, -0.6212493, -0.2630278, 0.92086536, -0.2877906, -0.2630278)
+light_color = Color(0.572549, 0.776471, 0.956863, 1)
+light_energy = 0.0
+
+[node name="SkyDome" type="Node" parent="Environment/Sky3D" unique_id=209027607]
+script = ExtResource("16_5tg8h")
+sun_azimuth = -3.23161
+sun_altitude = -0.4289363
+sun_light_energy = 2.0
+moon_azimuth = -1.2925736
+moon_altitude = -1.8627154
+moon_size = 0.02
+wind_direction = 2.35619451204804
+cumulus_coverage = 0.0
+
+[node name="TimeOfDay" type="Node" parent="Environment/Sky3D" unique_id=284982135]
+script = ExtResource("17_sd5dy")
+editor_time_enabled = false
+game_time_enabled = false
+dome_path = NodePath("../SkyDome")
+minutes_per_day = 5.0
+current_time = 12.251
+day = 25
+month = 5
+year = 2026
+latitude = 0.7942677521231585
+longitude = 0.22288552679668375
+utc = 1.0
+
+[node name="World" type="Node3D" parent="." unique_id=724965106]
+process_mode = 1
+
+[node name="Track" parent="World" unique_id=275456329 instance=ExtResource("18_sw6up")]
+unique_name_in_owner = true
+
+[node name="Vehicle" parent="World" unique_id=1402673652 instance=ExtResource("19_cxufb")]
+unique_name_in_owner = true

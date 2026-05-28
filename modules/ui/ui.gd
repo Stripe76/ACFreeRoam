@@ -1,12 +1,6 @@
 extends Control
 
 
-func _unhandled_input(event: InputEvent) -> void:
-	if event.is_action_pressed("Pause"):
-		get_tree().paused = !get_tree().paused
-		self.visible = get_tree().paused
-		get_viewport().set_input_as_handled()
-
-
-func select_panel(panel: String):
-	$MainPanel/TracksAndCars.visible = panel == "tracks"
+func preview_mode(enable: bool):
+	$MainPanel.visible = !enable
+	$PreviewPanel.visible = enable

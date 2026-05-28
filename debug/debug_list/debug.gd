@@ -16,7 +16,7 @@ func _init():
 func _physics_process(delta):
 	phys_delta = delta
 
-func _process(delta):
+func _process(_delta):
 	#queue["profile"] = ""
 	#queue[" frames per second"] = Engine.get_frames_per_second()
 	#queue[" delta_hz"] = 1.0/delta

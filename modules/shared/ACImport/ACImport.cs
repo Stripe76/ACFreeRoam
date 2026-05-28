@@ -119,6 +119,16 @@ public abstract class ACImport(Node3D self)
 							{
 								GD.Print( $"Loading PNG: {texValue}" );
 								texImage.LoadPngFromBuffer( ksTexture.texData );
+								
+								if( textureName == "txDiffuse" )
+								{
+									texImage.ResizeToPo2( false,Image.Interpolation.Trilinear );
+									texImage.GenerateMipmaps( );
+								}
+							}
+							else
+							{
+								GD.PushError( "Unsupported image file format: ",texValue );
 							}
 							images.Add( texValue,texImage );
 						}

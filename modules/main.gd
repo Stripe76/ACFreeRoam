@@ -1,28 +1,29 @@
 extends Node3D
 
-@onready var ui : Control = $"UI"
-@onready var track : Track = $"%Track"
-@onready var vehicle : Node3D = $"%Vehicle"
-#@onready var vehicle : Node3D = $Game/car
+@onready var track : Track = %Track
+@onready var vehicle : Node3D = %Vehicle
+@onready var environment : Node3D = $Environment
 
-var xrInterface : XRInterface
+var ui : Control
+var mouse_forward : SubViewport
+
 var current_pit_stall := 1
 
+var xrInterface : XRInterface
+
 func _ready() -> void:
-	#$GenerateInputMap.GenerateMap( "" )
+	xrInterface = XRServer.find_interface("OpenXR")	
 	
-	if not Engine.is_editor_hint():
-		xrInterface = XRServer.find_interface("OpenXR")	
+	if xrInterface and xrInterface.is_initialized():
+		vehicle.player = load("res://modules/player/player_vr.tscn").instantiate( )
 		
-		if xrInterface and xrInterface.is_initialized():
-			DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_DISABLED)
-			get_viewport().use_xr = true
-			#get_viewport().vrs_mode = Viewport.VRS_XR
-			#get_viewport().size = Vector2(1024,768);
-			#XRServer.world_scale = 1.0
-			xrInterface.pose_recentered.connect(_on_openxr_pose_recentered)
-			
-			XRServer.center_on_hmd(XRServer.RESET_BUT_KEEP_TILT,true)
+		ui = vehicle.player.ui
+		#if vehicle.player.has("mouse_forward"):
+		mouse_forward = vehicle.player.get("mouse_forward")
+	else:
+		vehicle.player = load("res://modules/player/player_flat.tscn").instantiate( )
+	
+		ui = vehicle.player.ui
 	
 	if track and true:
 		select_car( "abarth500","" );
@@ -39,10 +40,21 @@ func _on_openxr_pose_recentered():
 	XRServer.center_on_hmd(XRServer.RESET_BUT_KEEP_TILT, true)
 
 
+func _input(event: InputEvent) -> void:
+	if mouse_forward:
+		if event is InputEventMouse:
+			mouse_forward.push_input(event)
+
+
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action("Pause") and event.is_action_pressed("Pause"):
 		get_tree().paused = !get_tree().paused
 		ui.visible = get_tree().paused
+		
+		if ui.visible:
+			environment.pause()
+		else:
+			environment.resume()
 		get_viewport().set_input_as_handled()
 	
 	if event.is_action_released("NextPitStall"):
@@ -51,7 +63,6 @@ func _unhandled_input(event: InputEvent) -> void:
 		current_pit_stall = select_pit_stall(current_pit_stall-1)
 	elif event.is_action_released("ResetVehicle"):
 		vehicle.reset(vehicle.position+Vector3(0,1.5,0),Vector3.ZERO)
-		
 
 
 func select_track(track_id: String,variant_id: String):

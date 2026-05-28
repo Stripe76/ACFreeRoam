@@ -126,8 +126,6 @@ var plin: Vector3
 var pain: Vector3
 
 func _ready():
-	super()
-	
 	fl_wheel = $fl
 	fr_wheel = $fr
 	rl_wheel = $rl
@@ -181,7 +179,7 @@ func shiftgear(direction: int):
 				target_gear += direction
 
 
-func _input(event):	
+func _input(event):
 	if event.is_action_pressed("ShiftUp"):
 		shiftgear(1)
 	elif event.is_action_pressed("ShiftDown"):
@@ -273,40 +271,23 @@ func controls(d_scale):
 	var raw_accelerate: float = 0.0
 	var raw_decelerate: float = 0.0
 		
-	if Controls.UseMouseSteering:
-		desired_accelerate = min(Input.get_action_strength("m_accelerate"),1)
-		desired_decelerate = min(Input.get_action_strength("m_decelerate"),1)
+	# Accelerator
+	#desired_accelerate = min(Input.get_action_strength("kb_accelerate"),1)
+	desired_accelerate = min(inputs.accelerator,1)
+	#desired_decelerate = min(Input.get_action_strength("kb_decelerate"),1)
+	desired_decelerate = min(inputs.brakes,1)
 
-		raw_accelerate = desired_accelerate
-		raw_decelerate = desired_decelerate
+	raw_accelerate = desired_accelerate
+	raw_decelerate = desired_decelerate
 
-		if Controls.AST_shift_assistance == 2 and on_reverse:
-			desired_accelerate = min(Input.get_action_strength("m_decelerate"),1)
-			desired_decelerate = min(Input.get_action_strength("m_accelerate"),1)
-
-		desired_handbrake = min(Input.get_action_strength("m_handbrake"),1)
-		if Controls.AST_shift_assistance>0:
-			desired_clutching += Input.get_action_strength("m_handbrake")
-		else:
-			desired_clutching = Input.get_action_strength("m_clutch")
+	desired_handbrake = min(Input.get_action_strength("Handbrake"),1)
+	if Controls.AST_shift_assistance>0:
+		desired_clutching += Input.get_action_strength("Handbrake")
 	else:
-		#desired_accelerate = min(Input.get_action_strength("kb_accelerate"),1)
-		desired_accelerate = min(inputs.accelerator,1)
-		#desired_decelerate = min(Input.get_action_strength("kb_decelerate"),1)
-		desired_decelerate = min(inputs.brakes,1)
-
-		raw_accelerate = desired_accelerate
-		raw_decelerate = desired_decelerate
-
-		if Controls.AST_shift_assistance == 2 and on_reverse:
-			desired_accelerate = min(inputs.brakes,1)
-			desired_decelerate = min(inputs.accelerator,1)
-			
-		desired_handbrake = min(Input.get_action_strength("Handbrake"),1)
-		if Controls.AST_shift_assistance>0:
-			desired_clutching += Input.get_action_strength("Handbrake")
-		else:
-			desired_clutching = Input.get_action_strength("Clutch")
+		desired_clutching = Input.get_action_strength("Clutch")
+	if gear == 0:
+		desired_handbrake = 1
+		
 		
 	var engagement_rpm: float = EN_IdleRPM + Controls.AST_clutch_in_rpm_offset
 	var dist_from_engagement_rpm: float = (engagement_rpm - rpm)/(engagement_rpm -EN_IdleRPM)
